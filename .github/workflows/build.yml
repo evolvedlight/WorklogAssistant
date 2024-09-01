@@ -29,23 +29,8 @@ jobs:
     - name: Build artifacts
       run: flutter build windows --release
 
-    - name: Zip Release
-      uses: thedoctor0/zip-release@master
-      with:
-        type: 'zip'
-        filename: WorklogAssistant-${{github.ref_name}}-windows.zip
-        directory: build/windows/runner/Release
-
     - name: Upload Release Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: WorklogAssistant-${{ github.ref_name }}-windows
-        path: build/windows/runner/Release/WorklogAssistant-${{ github.ref_name }}-windows.zip
-
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        files: build/windows/runner/Release/WorklogAssistant-${{ github.ref_name }}-windows.zip
+        path: build/windows/x64/runner/Release
