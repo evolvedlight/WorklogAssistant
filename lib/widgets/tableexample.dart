@@ -268,10 +268,7 @@ class WorklogDataSource extends DataTableSource {
 
   @override
   DataRow2 getRow(int index, [Color? color]) {
-    final format = NumberFormat.decimalPercentPattern(
-      locale: 'en',
-      decimalDigits: 0,
-    );
+    final format = NumberFormat.decimalPattern('en');
     assert(index >= 0);
     if (index >= worklogEntries.length) throw 'index > _worklogEntries.length';
     final worklogEntry = worklogEntries[index];
@@ -291,36 +288,12 @@ class WorklogDataSource extends DataTableSource {
           notifyListeners();
         }
       },
-      onTap: hasRowTaps
-          ? () =>
-              _showSnackbar(context, 'Tapped on row ${worklogEntry.summary}')
-          : null,
-      onDoubleTap: hasRowTaps
-          ? () => _showSnackbar(
-              context, 'Double Tapped on row ${worklogEntry.summary}')
-          : null,
-      onLongPress: hasRowTaps
-          ? () => _showSnackbar(
-              context, 'Long pressed on row ${worklogEntry.summary}')
-          : null,
-      onSecondaryTap: hasRowTaps
-          ? () => _showSnackbar(
-              context, 'Right clicked on row ${worklogEntry.summary}')
-          : null,
-      onSecondaryTapDown: hasRowTaps
-          ? (d) => _showSnackbar(
-              context, 'Right button down on row ${worklogEntry.summary}')
-          : null,
       // specificRowHeight:
       // hasRowHeightOverrides && worklogEntry.fat >= 25 ? 100 : null,
       cells: [
         DataCell(Text(worklogEntry.jiraId)),
         DataCell(Text(worklogEntry.summary)),
-        DataCell(Text('${worklogEntry.timeLogged}'),
-            onTap: () => _showSnackbar(
-                context,
-                'Tapped on a cell with "${worklogEntry.timeLogged}"',
-                Colors.red)),
+        DataCell(Text(format.format(worklogEntry.timeLogged)))
       ],
     );
   }
@@ -344,11 +317,3 @@ class WorklogDataSource extends DataTableSource {
 }
 
 int _selectedCount = 0;
-
-_showSnackbar(BuildContext context, String text, [Color? color]) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    backgroundColor: color,
-    duration: const Duration(seconds: 1),
-    content: Text(text),
-  ));
-}
