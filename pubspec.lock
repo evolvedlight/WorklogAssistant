@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  data_table_2:
+    dependency: "direct main"
+    description:
+      name: data_table_2
+      sha256: f02ec9b24f44420816a87370ff4f4e533e15b274f6267e4c9a88a585ad1a0473
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.15"
   fake_async:
     dependency: transitive
     description:
@@ -82,10 +90,10 @@ packages:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      sha256: a25a15ebbdfc33ab1cd26c63a6ee519df92338a9c10f122adda92938253bef04
+      sha256: "3f41d009ba7172d5ff9be5f6e6e6abb4300e263aab8866d2a0842ed2a70f8f0c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.3"
+    version: "4.0.0"
   flutter_localizations:
     dependency: transitive
     description: flutter
@@ -110,7 +118,7 @@ packages:
     source: hosted
     version: "14.2.7"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
@@ -145,10 +153,10 @@ packages:
     dependency: transitive
     description:
       name: lints
-      sha256: "0a217c6c989d21039f1498c3ed9f3ed71b354e69873f13a8dfc3c9fe76f1b452"
+      sha256: "976c774dd944a42e83e2467f4cc670daef7eed6295b10b36ae8c85bcbf828235"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "4.0.0"
   logging:
     dependency: transitive
     description:
@@ -290,14 +298,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "85f96b7b06f32a60b19ab0bb8c32bf162a0474f2d94f4844384be1118e6b4954"
+      url: "https://pub.dev"
+    source: hosted
+    version: "26.2.11"
+  syncfusion_flutter_datagrid:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_datagrid
+      sha256: "81d58ca3620fff294a009ade93697e4fe06b5f5867a77c1dabe772c8238dc25e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "26.2.11"
   system_theme:
     dependency: "direct main"
     description:
       name: system_theme
-      sha256: "1f208db140a3d1e1eac2034b54920d95699c1534df576ced44b3312c5de3975f"
+      sha256: "676f8e5bdbf17d5b1267592370810df8cdfaa01d3a2e121b22bd4ea30e63f17c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.1"
+    version: "3.1.0"
   system_theme_web:
     dependency: transitive
     description:
@@ -414,10 +438,10 @@ packages:
     dependency: "direct main"
     description:
       name: window_manager
-      sha256: "8699323b30da4cdbe2aa2e7c9de567a6abd8a97d9a5c850a3c86dcd0b34bbfbf"
+      sha256: ab8b2a7f97543d3db2b506c9d875e637149d48ee0c6a5cb5f5fd6e0dac463792
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.9"
+    version: "0.4.2"
 sdks:
   dart: ">=3.5.0 <4.0.0"
   flutter: ">=3.24.0"

@@ -9,6 +9,7 @@ import 'package:worklog_assistant/screens/home.dart';
 import 'package:worklog_assistant/screens/settings.dart';
 import 'package:worklog_assistant/theme.dart';
 import 'package:go_router/go_router.dart';
+import 'model/jira_model.dart';
 import 'widgets/deferred_widget.dart';
 
 /// Flutter code sample for [Autocomplete] that demonstrates fetching the
@@ -74,8 +75,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-        value: _appTheme,
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => JiraModel()),
+          ChangeNotifierProvider(create: (context) => AppTheme()),
+        ],
         builder: (context, child) {
           final appTheme = context.watch<AppTheme>();
 
