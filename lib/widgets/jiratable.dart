@@ -1,7 +1,10 @@
 import 'package:data_table_2/data_table_2.dart';
+import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:worklog_assistant/theme.dart';
 
 import '../model/jira_model.dart';
 
@@ -12,14 +15,14 @@ import '../model/jira_model.dart';
 // The file was extracted from GitHub: https://github.com/flutter/gallery
 // Changes and modifications by Maxim Saplin, 2021
 
-class DataTable2ScrollupDemo extends StatefulWidget {
-  const DataTable2ScrollupDemo({super.key});
+class JiraTable extends StatefulWidget {
+  const JiraTable({super.key});
 
   @override
-  DataTable2ScrollupDemoState createState() => DataTable2ScrollupDemoState();
+  JiraTableState createState() => JiraTableState();
 }
 
-class DataTable2ScrollupDemoState extends State<DataTable2ScrollupDemo> {
+class JiraTableState extends State<JiraTable> {
   bool _sortAscending = true;
   int? _sortColumnIndex;
   late WorklogDataSource _worklogEntriesDataSource;
@@ -62,55 +65,109 @@ class DataTable2ScrollupDemoState extends State<DataTable2ScrollupDemo> {
   @override
   Widget build(BuildContext context) {
     return Consumer<JiraModel>(builder: (context, jiraModel, child) {
-      return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Stack(children: [
-            Theme(
-                // These makes scroll bars almost always visible. If horizontal scroll bar
-                // is displayed then vertical migh be hidden as it will go out of viewport
-                data: ThemeData(
-                    scrollbarTheme: ScrollbarThemeData(
-                        thumbVisibility: WidgetStateProperty.all(true),
-                        thumbColor:
-                            WidgetStateProperty.all<Color>(Colors.black))),
-                child: DataTable2(
-                    scrollController: _controller,
-                    horizontalScrollController: _horizontalController,
-                    columnSpacing: 0,
-                    horizontalMargin: 12,
-                    bottomMargin: 10,
-                    dividerThickness: 0.2,
-                    minWidth: 600,
-                    sortColumnIndex: _sortColumnIndex,
-                    sortAscending: _sortAscending,
-                    onSelectAll: (val) => setState(
-                        () => _worklogEntriesDataSource.selectAll(val)),
-                    columns: [
-                      DataColumn2(
-                        label: const Text('Jira ID'),
-                        size: ColumnSize.S,
-                        onSort: (columnIndex, ascending) => _sort<String>(
-                            (d) => d.jiraId, columnIndex, ascending),
-                      ),
-                      DataColumn2(
-                        label: const Text('Summary'),
-                        size: ColumnSize.S,
-                        numeric: true,
-                        onSort: (columnIndex, ascending) => _sort<String>(
-                            (d) => d.summary, columnIndex, ascending),
-                      ),
-                      DataColumn2(
-                        label: const Text('Time Logged'),
-                        size: ColumnSize.S,
-                        numeric: true,
-                        onSort: (columnIndex, ascending) => _sort<num>(
-                            (d) => d.timeLogged, columnIndex, ascending),
-                      ),
-                    ],
-                    rows: List<DataRow>.generate(jiraModel.items.length,
-                        (index) => _worklogEntriesDataSource.getRow(index)))),
-          ]));
+      final appTheme = context.watch<AppTheme>();
+
+      return fluent.Column(children: [
+        fluent.Padding(
+          padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
+          child: fluent.CommandBar(
+            overflowBehavior: fluent.CommandBarOverflowBehavior.noWrap,
+            primaryItems: [
+              fluent.CommandBarBuilderItem(
+                builder: (context, mode, w) => Tooltip(
+                  message: "Add worklog manually",
+                  child: w,
+                ),
+                wrappedItem: fluent.CommandBarButton(
+                  icon: const Icon(fluent.FluentIcons.add),
+                  label: const Text('New'),
+                  onPressed: createManualWorklog,
+                ),
+              ),
+              fluent.CommandBarBuilderItem(
+                builder: (context, mode, w) => Tooltip(
+                  message: "Delete selected worklogs",
+                  child: w,
+                ),
+                wrappedItem: fluent.CommandBarButton(
+                  icon: const Icon(fluent.FluentIcons.delete),
+                  label: const Text('Delete'),
+                  onPressed: deleteSelected,
+                ),
+              ),
+            ],
+          ),
+        ),
+        fluent.Expanded(
+          child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Stack(children: [
+                Theme(
+                    // These makes scroll bars almost always visible. If horizontal scroll bar
+                    // is displayed then vertical migh be hidden as it will go out of viewport
+                    data: appTheme.mode == ThemeMode.dark
+                        ? ThemeData.dark()
+                        : ThemeData.light(),
+                    child: DataTable2(
+                        scrollController: _controller,
+                        horizontalScrollController: _horizontalController,
+                        columnSpacing: 4,
+                        horizontalMargin: 12,
+                        bottomMargin: 10,
+                        dividerThickness: 0.2,
+                        minWidth: 600,
+                        sortColumnIndex: _sortColumnIndex,
+                        sortAscending: _sortAscending,
+                        empty: Center(
+                            child: Container(
+                                padding: const EdgeInsets.all(20),
+                                color: Colors.grey[200],
+                                child: const Text('Nothing yet tracked'))),
+                        onSelectAll: (val) => setState(
+                            () => _worklogEntriesDataSource.selectAll(val)),
+                        columns: [
+                          DataColumn2(
+                            label: const Text('Jira ID'),
+                            size: ColumnSize.S,
+                            onSort: (columnIndex, ascending) => _sort<String>(
+                                (d) => d.jiraId, columnIndex, ascending),
+                          ),
+                          DataColumn2(
+                            label: const Text('Summary'),
+                            size: ColumnSize.M,
+                            numeric: false,
+                          ),
+                          DataColumn2(
+                            label: const Text('Time Logged'),
+                            size: ColumnSize.S,
+                            numeric: true,
+                            onSort: (columnIndex, ascending) => _sort<num>(
+                                (d) => d.timeLogged, columnIndex, ascending),
+                          ),
+                          DataColumn2(
+                            label: const Text('Status'),
+                            size: ColumnSize.S,
+                            numeric: false,
+                          ),
+                        ],
+                        rows: List<DataRow>.generate(
+                            jiraModel.items.length,
+                            (index) =>
+                                _worklogEntriesDataSource.getRow(index)))),
+              ])),
+        ),
+      ]);
     });
+  }
+
+  void deleteSelected() {
+    var jiraModel = Provider.of<JiraModel>(context, listen: false);
+    jiraModel.deletedSelected();
+  }
+
+  void createManualWorklog() {
+    var jiraModel = Provider.of<JiraModel>(context, listen: false);
+    jiraModel.add(WorklogEntry("New", 0.0, WorklogStatus.pending));
   }
 }
 
@@ -273,29 +330,48 @@ class WorklogDataSource extends DataTableSource {
     if (index >= worklogEntries.length) throw 'index > _worklogEntries.length';
     final worklogEntry = worklogEntries[index];
     return DataRow2.byIndex(
-      index: index,
-      selected: worklogEntry.selected,
-      color: color != null
-          ? WidgetStateProperty.all(color)
-          : (hasZebraStripes && index.isEven
-              ? WidgetStateProperty.all(Theme.of(context).highlightColor)
-              : null),
-      onSelectChanged: (value) {
-        if (worklogEntry.selected != value) {
-          _selectedCount += value! ? 1 : -1;
-          assert(_selectedCount >= 0);
-          worklogEntry.selected = value;
-          notifyListeners();
-        }
-      },
-      // specificRowHeight:
-      // hasRowHeightOverrides && worklogEntry.fat >= 25 ? 100 : null,
-      cells: [
-        DataCell(Text(worklogEntry.jiraId)),
-        DataCell(Text(worklogEntry.summary)),
-        DataCell(Text(format.format(worklogEntry.timeLogged)))
-      ],
-    );
+        index: index,
+        selected: worklogEntry.selected,
+        color: color != null
+            ? WidgetStateProperty.all(color)
+            : (hasZebraStripes && index.isEven
+                ? WidgetStateProperty.all(Theme.of(context).highlightColor)
+                : null),
+        onSelectChanged: (value) {
+          if (worklogEntry.selected != value) {
+            _selectedCount += value! ? 1 : -1;
+            assert(_selectedCount >= 0);
+            worklogEntry.selected = value;
+            notifyListeners();
+          }
+        },
+        // specificRowHeight:
+        // hasRowHeightOverrides && worklogEntry.fat >= 25 ? 100 : null,
+        cells: [
+          DataCell(
+              TextFormField(
+                  initialValue: worklogEntry.jiraId.toString(),
+                  keyboardType: TextInputType.text,
+                  onFieldSubmitted: (val) {
+                    print('onSubmited jiraId ${worklogEntry.jiraId} $val');
+                  }),
+              showEditIcon: true),
+          DataCell(Text(worklogEntry.jiraId)),
+          // DataCell(
+          //     fluent.NumberBox(
+          //         value: worklogEntry.timeLogged,
+          //         onChanged: (value) => updateValue(value)),
+          //     showEditIcon: true),
+          DataCell(
+              TextFormField(
+                  initialValue: worklogEntry.timeLogged.toString(),
+                  keyboardType: TextInputType.number,
+                  onFieldSubmitted: (val) {
+                    print('onSubmited ${worklogEntry.jiraId} $val');
+                  }),
+              showEditIcon: true),
+          DataCell(Text(worklogEntry.status.toString())),
+        ]);
   }
 
   @override
@@ -314,6 +390,10 @@ class WorklogDataSource extends DataTableSource {
     _selectedCount = (checked ?? false) ? worklogEntries.length : 0;
     notifyListeners();
   }
+
+  updateValue(double? value) {}
 }
 
 int _selectedCount = 0;
+
+/// Define list of CommandBarItem

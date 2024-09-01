@@ -5,8 +5,10 @@ import 'package:system_theme/system_theme.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
 import 'package:url_launcher/link.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:worklog_assistant/model/tracking_model.dart';
 import 'package:worklog_assistant/screens/home.dart';
 import 'package:worklog_assistant/screens/settings.dart';
+import 'package:worklog_assistant/screens/tracking.dart';
 import 'package:worklog_assistant/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'model/jira_model.dart';
@@ -79,6 +81,7 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (context) => JiraModel()),
           ChangeNotifierProvider(create: (context) => AppTheme()),
+          ChangeNotifierProvider(create: (context) => TrackingModel()),
         ],
         builder: (context, child) {
           final appTheme = context.watch<AppTheme>();
@@ -86,7 +89,6 @@ class MyApp extends StatelessWidget {
           return FluentApp.router(
             title: appTitle,
             themeMode: appTheme.mode,
-            debugShowCheckedModeBanner: false,
             color: appTheme.color,
             darkTheme: FluentThemeData(
               brightness: Brightness.dark,
@@ -157,14 +159,13 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       title: const Text('Home'),
       body: const SizedBox.shrink(),
     ),
-    PaneItemHeader(header: const Text('Inputs')),
+    PaneItemHeader(header: const Text('Issue Tracking')),
     PaneItem(
-      key: const ValueKey('/inputs/buttons'),
+      key: const ValueKey('/tracking'),
       icon: const Icon(FluentIcons.button_control),
-      title: const Text('Button'),
+      title: const Text('Track Time'),
       body: const SizedBox.shrink(),
     ),
-    // TODO: Scrollbar, RatingBar
   ].map<NavigationPaneItem>((e) {
     PaneItem buildPaneItem(PaneItem item) {
       return PaneItem(
@@ -355,28 +356,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       },
       pane: NavigationPane(
         selected: _calculateSelectedIndex(context),
-        header: SizedBox(
-          height: kOneLineTileHeight,
-          child: ShaderMask(
-            shaderCallback: (rect) {
-              final color = appTheme.color.defaultBrushFor(
-                theme.brightness,
-              );
-              return LinearGradient(
-                colors: [
-                  color,
-                  color,
-                ],
-              ).createShader(rect);
-            },
-            child: const FlutterLogo(
-              style: FlutterLogoStyle.horizontal,
-              size: 80.0,
-              textColor: Colors.white,
-              duration: Duration.zero,
-            ),
-          ),
-        ),
         displayMode: appTheme.displayMode,
         indicator: () {
           switch (appTheme.indicator) {
@@ -434,7 +413,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                 icon: const Icon(FluentIcons.search),
               ),
             ),
-            placeholder: 'Search',
+            placeholder: 'Search for issue',
           );
         }),
         autoSuggestBoxReplacement: const Icon(FluentIcons.search),
@@ -549,270 +528,8 @@ final router = GoRouter(navigatorKey: rootNavigatorKey, routes: [
 
       /// Settings
       GoRoute(path: '/settings', builder: (context, state) => const Settings()),
-
-      /// /// Input
-      /// Buttons
-      // GoRoute(
-      //   path: '/inputs/buttons',
-      //   builder: (context, state) => DeferredWidget(
-      //     inputs.loadLibrary,
-      //     () => inputs.ButtonPage(),
-      //   ),
-      // ),
-
-      // /// Checkbox
-      // GoRoute(
-      //   path: '/inputs/checkbox',
-      //   builder: (context, state) => DeferredWidget(
-      //     inputs.loadLibrary,
-      //     () => inputs.CheckBoxPage(),
-      //   ),
-      // ),
-
-      // /// Slider
-      // GoRoute(
-      //   path: '/inputs/slider',
-      //   builder: (context, state) => DeferredWidget(
-      //     inputs.loadLibrary,
-      //     () => inputs.SliderPage(),
-      //   ),
-      // ),
-
-      // /// ToggleSwitch
-      // GoRoute(
-      //   path: '/inputs/toggle_switch',
-      //   builder: (context, state) => DeferredWidget(
-      //     inputs.loadLibrary,
-      //     () => inputs.ToggleSwitchPage(),
-      //   ),
-      // ),
-
-      // /// /// Form
-      // /// TextBox
-      // GoRoute(
-      //   path: '/forms/text_box',
-      //   builder: (context, state) => DeferredWidget(
-      //     forms.loadLibrary,
-      //     () => forms.TextBoxPage(),
-      //   ),
-      // ),
-
-      // /// AutoSuggestBox
-      // GoRoute(
-      //   path: '/forms/auto_suggest_box',
-      //   builder: (context, state) => DeferredWidget(
-      //     forms.loadLibrary,
-      //     () => forms.AutoSuggestBoxPage(),
-      //   ),
-      // ),
-
-      // /// ComboBox
-      // GoRoute(
-      //   path: '/forms/combobox',
-      //   builder: (context, state) => DeferredWidget(
-      //     forms.loadLibrary,
-      //     () => forms.ComboBoxPage(),
-      //   ),
-      // ),
-
-      // /// NumberBox
-      // GoRoute(
-      //   path: '/forms/numberbox',
-      //   builder: (context, state) => DeferredWidget(
-      //     forms.loadLibrary,
-      //     () => forms.NumberBoxPage(),
-      //   ),
-      // ),
-
-      // GoRoute(
-      //   path: '/forms/passwordbox',
-      //   builder: (context, state) => DeferredWidget(
-      //     forms.loadLibrary,
-      //     () => forms.PasswordBoxPage(),
-      //   ),
-      // ),
-
-      // /// TimePicker
-      // GoRoute(
-      //   path: '/forms/time_picker',
-      //   builder: (context, state) => DeferredWidget(
-      //     forms.loadLibrary,
-      //     () => forms.TimePickerPage(),
-      //   ),
-      // ),
-
-      // /// DatePicker
-      // GoRoute(
-      //   path: '/forms/date_picker',
-      //   builder: (context, state) => DeferredWidget(
-      //     forms.loadLibrary,
-      //     () => forms.DatePickerPage(),
-      //   ),
-      // ),
-
-      // /// /// Navigation
-      // /// NavigationView
-      // GoRoute(
-      //   path: '/navigation/navigation_view',
-      //   builder: (context, state) => DeferredWidget(
-      //     navigation.loadLibrary,
-      //     () => navigation.NavigationViewPage(),
-      //   ),
-      // ),
-      // GoRoute(
-      //   path: '/navigation_view',
-      //   builder: (context, state) => DeferredWidget(
-      //     navigation.loadLibrary,
-      //     () => navigation.NavigationViewShellRoute(),
-      //   ),
-      // ),
-
-      // /// TabView
-      // GoRoute(
-      //   path: '/navigation/tab_view',
-      //   builder: (context, state) => DeferredWidget(
-      //     navigation.loadLibrary,
-      //     () => navigation.TabViewPage(),
-      //   ),
-      // ),
-
-      // /// TreeView
-      // GoRoute(
-      //   path: '/navigation/tree_view',
-      //   builder: (context, state) => DeferredWidget(
-      //     navigation.loadLibrary,
-      //     () => navigation.TreeViewPage(),
-      //   ),
-      // ),
-
-      // /// BreadcrumbBar
-      // GoRoute(
-      //   path: '/navigation/breadcrumb_bar',
-      //   builder: (context, state) => DeferredWidget(
-      //     navigation.loadLibrary,
-      //     () => navigation.BreadcrumbBarPage(),
-      //   ),
-      // ),
-
-      // /// /// Surfaces
-      // /// Acrylic
-      // GoRoute(
-      //   path: '/surfaces/acrylic',
-      //   builder: (context, state) => DeferredWidget(
-      //     surfaces.loadLibrary,
-      //     () => surfaces.AcrylicPage(),
-      //   ),
-      // ),
-
-      // /// CommandBar
-      // GoRoute(
-      //   path: '/surfaces/command_bar',
-      //   builder: (context, state) => DeferredWidget(
-      //     surfaces.loadLibrary,
-      //     () => surfaces.CommandBarsPage(),
-      //   ),
-      // ),
-
-      // /// Expander
-      // GoRoute(
-      //   path: '/surfaces/expander',
-      //   builder: (context, state) => DeferredWidget(
-      //     surfaces.loadLibrary,
-      //     () => surfaces.ExpanderPage(),
-      //   ),
-      // ),
-
-      // /// InfoBar
-      // GoRoute(
-      //   path: '/surfaces/info_bar',
-      //   builder: (context, state) => DeferredWidget(
-      //     surfaces.loadLibrary,
-      //     () => surfaces.InfoBarsPage(),
-      //   ),
-      // ),
-
-      // /// Progress Indicators
-      // GoRoute(
-      //   path: '/surfaces/progress_indicators',
-      //   builder: (context, state) => DeferredWidget(
-      //     surfaces.loadLibrary,
-      //     () => surfaces.ProgressIndicatorsPage(),
-      //   ),
-      // ),
-
-      // /// Tiles
-      // GoRoute(
-      //   path: '/surfaces/tiles',
-      //   builder: (context, state) => DeferredWidget(
-      //     surfaces.loadLibrary,
-      //     () => surfaces.TilesPage(),
-      //   ),
-      // ),
-
-      // /// Popups
-      // /// ContentDialog
-      // GoRoute(
-      //   path: '/popups/content_dialog',
-      //   builder: (context, state) => DeferredWidget(
-      //     surfaces.loadLibrary,
-      //     () => popups.ContentDialogPage(),
-      //   ),
-      // ),
-
-      // /// Tooltip
-      // GoRoute(
-      //   path: '/popups/tooltip',
-      //   builder: (context, state) => DeferredWidget(
-      //     surfaces.loadLibrary,
-      //     () => popups.TooltipPage(),
-      //   ),
-      // ),
-
-      // /// Flyout
-      // GoRoute(
-      //   path: '/popups/flyout',
-      //   builder: (context, state) => DeferredWidget(
-      //     surfaces.loadLibrary,
-      //     () => popups.Flyout2Screen(),
-      //   ),
-      // ),
-
-      // /// /// Theming
-      // /// Colors
-      // GoRoute(
-      //   path: '/theming/colors',
-      //   builder: (context, state) => DeferredWidget(
-      //     theming.loadLibrary,
-      //     () => theming.ColorsPage(),
-      //   ),
-      // ),
-
-      // /// Typography
-      // GoRoute(
-      //   path: '/theming/typography',
-      //   builder: (context, state) => DeferredWidget(
-      //     theming.loadLibrary,
-      //     () => theming.TypographyPage(),
-      //   ),
-      // ),
-
-      // /// Icons
-      // GoRoute(
-      //   path: '/theming/icons',
-      //   builder: (context, state) => DeferredWidget(
-      //     theming.loadLibrary,
-      //     () => theming.IconsPage(),
-      //   ),
-      // ),
-
-      // /// Reveal Focus
-      // GoRoute(
-      //   path: '/theming/reveal_focus',
-      //   builder: (context, state) => DeferredWidget(
-      //     theming.loadLibrary,
-      //     () => theming.RevealFocusPage(),
-      //   ),
-      // ),
+      GoRoute(
+          path: '/tracking', builder: (context, state) => const TrackingPage()),
     ],
   ),
 ]);
