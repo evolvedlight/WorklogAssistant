@@ -13,23 +13,41 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
+    - uses: subosito/flutter-action@v1
       with:
-        channel: stable
-        flutter-version-file: pubspec.yaml
+        channel: 'stable'
+        flutter-version: '3.24.1'
 
-    - name: Install dependencies
+    - name: Install project dependencies
       run: flutter pub get
 
-    - name: Build Windows executable
-      run: flutter build windows
+    - name: Generate intermediates
+      run: flutter pub run build_runner build --delete-conflicting-outputs
 
-    - name: Upload artifact
+    - name: Enable windows build
+      run: flutter config --enable-windows-desktop
+
+    - name: Build artifacts
+      run: flutter build windows --release
+
+    - name: Archive Release
+      run: |
+        mkdir -p build/windows/runner/Release
+        cd build/windows/runner/Release
+        zip -r WorklogAssistant-${{ github.ref_name }}-windows.zip .
+
+    - name: Upload Release Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: flutter-windows-exe
-        path: build/windows/runner/Release/
+        name: WorklogAssistant-${{ github.ref_name }}-windows
+        path: build/windows/runner/Release/WorklogAssistant-${{ github.ref_name }}-windows.zip
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: build/windows/runner/Release/WorklogAssistant-${{ github.ref_name }}-windows.zip
