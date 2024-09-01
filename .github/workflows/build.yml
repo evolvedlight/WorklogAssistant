@@ -29,11 +29,12 @@ jobs:
     - name: Build artifacts
       run: flutter build windows --release
 
-    - name: Archive Release
-      run: |
-        mkdir -p build/windows/runner/Release
-        cd build/windows/runner/Release
-        zip -r WorklogAssistant-${{ github.ref_name }}-windows.zip .
+    - name: Zip Release
+      uses: thedoctor0/zip-release@master
+      with:
+        type: 'zip'
+        filename: WorklogAssistant-${{github.ref_name}}-windows.zip
+        directory: build/windows/runner/Release
 
     - name: Upload Release Artifact
       uses: actions/upload-artifact@v2
