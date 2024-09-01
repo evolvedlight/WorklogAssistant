@@ -32,5 +32,5 @@ jobs:
     - name: Upload Release Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WorklogAssistant-${{ github.ref_name }}-windows
+        name: WorklogAssistant-windows-${{ github.run_number}}
         path: build/windows/x64/runner/Release
