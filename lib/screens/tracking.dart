@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:worklog_assistant/model/tracking_model.dart';
@@ -59,8 +57,9 @@ class _TrackingPageState extends State<TrackingPage> with PageMixin {
                     )),
                     Consumer<TrackingModel>(
                         builder: (context, trackingContext, child) => Expanded(
-                            child:
-                                Text(trackingContext.secondsTimed.toString()))),
+                            child: Text(
+                                formatTime(trackingContext.secondsTimed),
+                                style: TextStyle(fontSize: 24)))),
                     Consumer<TrackingModel>(
                       builder: (context, trackingContext, child) => Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -97,6 +96,13 @@ class _TrackingPageState extends State<TrackingPage> with PageMixin {
     print(value);
   }
 
+  String formatTime(int seconds) {
+    var hours = seconds ~/ 3600;
+    var minutes = (seconds % 3600) ~/ 60;
+    var remainingSeconds = seconds % 60;
+    return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}";
+  }
+
   void stopTracking() {
     var trackingModel = Provider.of<TrackingModel>(context, listen: false);
     trackingModel.stopTime();
@@ -104,7 +110,7 @@ class _TrackingPageState extends State<TrackingPage> with PageMixin {
     var jiraModel = Provider.of<JiraModel>(context, listen: false);
     var currentIssue = trackingModel.currentIssue;
     jiraModel.add(WorklogEntry(
-        currentIssue, currentTime.toDouble(), WorklogStatus.pending));
+        currentIssue, Duration(seconds: currentTime), WorklogStatus.pending));
   }
 
   void startTracking() {

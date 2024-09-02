@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
 import 'package:url_launcher/link.dart';
@@ -9,10 +12,11 @@ import 'package:worklog_assistant/model/tracking_model.dart';
 import 'package:worklog_assistant/screens/home.dart';
 import 'package:worklog_assistant/screens/settings.dart';
 import 'package:worklog_assistant/screens/tracking.dart';
+import 'package:worklog_assistant/services/database_helper.dart';
 import 'package:worklog_assistant/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'model/jira_model.dart';
-import 'widgets/deferred_widget.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// Flutter code sample for [Autocomplete] that demonstrates fetching the
 /// options asynchronously and debouncing the network calls, including handling
@@ -31,6 +35,13 @@ bool get isDesktop {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (Platform.isWindows || Platform.isLinux) {
+    // Initialize FFI
+    sqfliteFfiInit();
+  }
+
+  databaseFactory = databaseFactoryFfi;
 
   if (!kIsWeb &&
       [
@@ -69,8 +80,6 @@ void main() async {
     // DeferredWidget.preload(theming.loadLibrary),
   ]);
 }
-
-final _appTheme = AppTheme();
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -221,6 +230,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
 
   @override
   void initState() {
+    _loadData();
     windowManager.addListener(this);
     super.initState();
   }
@@ -333,10 +343,13 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
               child: ToggleSwitch(
                 content: const Text('Dark Mode'),
                 checked: FluentTheme.of(context).brightness.isDark,
-                onChanged: (v) {
+                onChanged: (v) async {
+                  final prefs = await SharedPreferences.getInstance();
                   if (v) {
+                    prefs.setString("appTheme.mode", "dark");
                     appTheme.mode = ThemeMode.dark;
                   } else {
+                    prefs.setString("appTheme.mode", "light");
                     appTheme.mode = ThemeMode.light;
                   }
                 },
@@ -452,6 +465,19 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         },
       );
     }
+  }
+
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      var appTheme = Provider.of<AppTheme>(context, listen: false);
+      var mode = prefs.getString('appTheme.mode');
+      if (mode != null) {
+        appTheme.mode = mode == 'dark' ? ThemeMode.dark : ThemeMode.light;
+      } else {
+        appTheme.mode = ThemeMode.system;
+      }
+    });
   }
 }
 

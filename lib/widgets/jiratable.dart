@@ -121,7 +121,8 @@ class JiraTableState extends State<JiraTable> {
                         empty: Center(
                             child: Container(
                                 padding: const EdgeInsets.all(20),
-                                color: Colors.grey[200],
+                                color: const fluent.Color.fromARGB(
+                                    255, 155, 135, 135),
                                 child: const Text('Nothing yet tracked'))),
                         onSelectAll: (val) => setState(
                             () => _worklogEntriesDataSource.selectAll(val)),
@@ -142,7 +143,9 @@ class JiraTableState extends State<JiraTable> {
                             size: ColumnSize.S,
                             numeric: true,
                             onSort: (columnIndex, ascending) => _sort<num>(
-                                (d) => d.timeLogged, columnIndex, ascending),
+                                (d) => d.timeLogged.inSeconds,
+                                columnIndex,
+                                ascending),
                           ),
                           DataColumn2(
                             label: const Text('Status'),
@@ -167,7 +170,7 @@ class JiraTableState extends State<JiraTable> {
 
   void createManualWorklog() {
     var jiraModel = Provider.of<JiraModel>(context, listen: false);
-    jiraModel.add(WorklogEntry("New", 0.0, WorklogStatus.pending));
+    jiraModel.add(WorklogEntry("New", Duration(), WorklogStatus.pending));
   }
 }
 
@@ -325,7 +328,6 @@ class WorklogDataSource extends DataTableSource {
 
   @override
   DataRow2 getRow(int index, [Color? color]) {
-    final format = NumberFormat.decimalPattern('en');
     assert(index >= 0);
     if (index >= worklogEntries.length) throw 'index > _worklogEntries.length';
     final worklogEntry = worklogEntries[index];

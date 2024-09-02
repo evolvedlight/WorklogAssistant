@@ -36,7 +36,8 @@ class _HomePageState extends State<HomePage> with PageMixin {
                   children: [
                     Icon(FluentIcons.cloud_upload),
                     SizedBox(width: 8.0),
-                    Text("Submit Worklogs (${jiraModel.totalLoggedTime})")
+                    Text(
+                        "Submit Worklogs (${formatTotalLoggedTime(jiraModel.totalLoggedTime)})")
                   ],
                 ),
               );
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> with PageMixin {
   }
 
   uploadWorklogs(JiraModel jiraModel) async {
-    Future<http.Response> submitWorklogs(String jiraId, double timeLogged) {
+    Future<http.Response> submitWorklogs(String jiraId, Duration timeLogged) {
       var url =
           'http://localhost:8080/rest/api/2/issue/$jiraId/worklog?adjustEstimate=leave';
 
@@ -83,5 +84,20 @@ class _HomePageState extends State<HomePage> with PageMixin {
         print('Submitted Worklog');
       }
     }
+  }
+
+  formatTotalLoggedTime(double totalLoggedTime) {
+    // if less than a minute, display in seconds but round to the nearest second
+    if (totalLoggedTime < 60) {
+      return "${totalLoggedTime.round()}s";
+    }
+    // if less than an hour, display in minutes
+    if (totalLoggedTime < 3600) {
+      var minutes = totalLoggedTime ~/ 60;
+      return "${minutes}m";
+    }
+    // example: 3600 -> 1h
+    var hours = totalLoggedTime ~/ 3600;
+    return "${hours}h";
   }
 }
