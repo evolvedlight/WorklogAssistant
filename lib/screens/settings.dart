@@ -1,9 +1,12 @@
 // ignore_for_file: constant_identifier_names
 
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../theme.dart';
@@ -85,6 +88,9 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> with PageMixin {
+  final jiraUrlController = TextEditingController();
+  final patController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasMediaQuery(context));
@@ -95,213 +101,104 @@ class _SettingsState extends State<Settings> with PageMixin {
     const supportedLocales = FluentLocalizations.supportedLocales;
     final currentLocale =
         appTheme.locale ?? Localizations.maybeLocaleOf(context);
+
     return ScaffoldPage.scrollable(
-      header: const PageHeader(title: Text('Settings')),
-      children: [
-        Text('Theme mode', style: FluentTheme.of(context).typography.subtitle),
-        spacer,
-        ...List.generate(ThemeMode.values.length, (index) {
-          final mode = ThemeMode.values[index];
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(bottom: 8.0),
-            child: RadioButton(
-              checked: appTheme.mode == mode,
-              onChanged: (value) {
-                if (value) {
-                  appTheme.mode = mode;
-
-                  if (kIsWindowEffectsSupported) {
-                    // some window effects require on [dark] to look good.
-                    // appTheme.setEffect(WindowEffect.disabled, context);
-                    appTheme.setEffect(appTheme.windowEffect, context);
-                  }
-                }
-              },
-              content: Text('$mode'.replaceAll('ThemeMode.', '')),
-            ),
-          );
-        }),
-        biggerSpacer,
-        Text(
-          'Navigation Pane Display Mode',
-          style: FluentTheme.of(context).typography.subtitle,
-        ),
-        spacer,
-        ...List.generate(PaneDisplayMode.values.length, (index) {
-          final mode = PaneDisplayMode.values[index];
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(bottom: 8.0),
-            child: RadioButton(
-              checked: appTheme.displayMode == mode,
-              onChanged: (value) {
-                if (value) appTheme.displayMode = mode;
-              },
-              content: Text(
-                mode.toString().replaceAll('PaneDisplayMode.', ''),
-              ),
-            ),
-          );
-        }),
-        biggerSpacer,
-        Text('Navigation Indicator',
-            style: FluentTheme.of(context).typography.subtitle),
-        spacer,
-        ...List.generate(NavigationIndicators.values.length, (index) {
-          final mode = NavigationIndicators.values[index];
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(bottom: 8.0),
-            child: RadioButton(
-              checked: appTheme.indicator == mode,
-              onChanged: (value) {
-                if (value) appTheme.indicator = mode;
-              },
-              content: Text(
-                mode.toString().replaceAll('NavigationIndicators.', ''),
-              ),
-            ),
-          );
-        }),
-        biggerSpacer,
-        Text('Accent Color',
-            style: FluentTheme.of(context).typography.subtitle),
-        spacer,
-        Wrap(children: [
-          Tooltip(
-            message: accentColorNames[0],
-            child: _buildColorBlock(appTheme, systemAccentColor),
+        header: const PageHeader(title: Text('Settings')),
+        children: [
+          new Text("JIRA Connection"),
+          TextBox(
+            placeholder: 'JIRA URL',
+            expands: false,
+            onSubmitted: (value) => checkServer(value),
+            controller: jiraUrlController,
           ),
-          ...List.generate(Colors.accentColors.length, (index) {
-            final color = Colors.accentColors[index];
-            return Tooltip(
-              message: accentColorNames[index + 1],
-              child: _buildColorBlock(appTheme, color),
-            );
-          }),
-        ]),
-        if (kIsWindowEffectsSupported) ...[
-          biggerSpacer,
-          Text(
-            'Window Transparency',
-            style: FluentTheme.of(context).typography.subtitle,
-          ),
-          description(
-            content: Text(
-              'Running on ${defaultTargetPlatform.toString().replaceAll('TargetPlatform.', '')}',
-            ),
-          ),
-          spacer,
-          ...List.generate(currentWindowEffects.length, (index) {
-            final mode = currentWindowEffects[index];
-            return Padding(
-              padding: const EdgeInsetsDirectional.only(bottom: 8.0),
-              child: RadioButton(
-                checked: appTheme.windowEffect == mode,
-                onChanged: (value) {
-                  if (value) {
-                    appTheme.windowEffect = mode;
-                    appTheme.setEffect(mode, context);
-                  }
-                },
-                content: Text(
-                  mode.toString().replaceAll('WindowEffect.', ''),
-                ),
-              ),
-            );
-          }),
-        ],
-        biggerSpacer,
-        Text(
-          'Text Direction',
-          style: FluentTheme.of(context).typography.subtitle,
-        ),
-        spacer,
-        ...List.generate(TextDirection.values.length, (index) {
-          final direction = TextDirection.values[index];
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(bottom: 8.0),
-            child: RadioButton(
-              checked: appTheme.textDirection == direction,
-              onChanged: (value) {
-                if (value) {
-                  appTheme.textDirection = direction;
-                }
-              },
-              content: Text(
-                '$direction'
-                    .replaceAll('TextDirection.', '')
-                    .replaceAll('rtl', 'Right to left')
-                    .replaceAll('ltr', 'Left to right'),
-              ),
-            ),
-          );
-        }).reversed,
-        biggerSpacer,
-        Text('Locale', style: FluentTheme.of(context).typography.subtitle),
-        description(
-          content: const Text(
-            'The locale used by the fluent_ui widgets, such as TimePicker and '
-            'DatePicker. This does not reflect the language of this showcase app.',
-          ),
-        ),
-        spacer,
-        Wrap(
-          spacing: 15.0,
-          runSpacing: 10.0,
-          children: List.generate(
-            supportedLocales.length,
-            (index) {
-              final locale = supportedLocales[index];
-
-              return Padding(
-                padding: const EdgeInsetsDirectional.only(bottom: 8.0),
-                child: RadioButton(
-                  checked: currentLocale == locale,
-                  onChanged: (value) {
-                    if (value) {
-                      appTheme.locale = locale;
-                    }
-                  },
-                  content: Text('$locale'),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
+          RadioButton(
+              checked: false,
+              onChanged: onChangeAuthType,
+              content: Text("Basic Auth")),
+          RadioButton(
+              checked: false,
+              onChanged: onChangeAuthType,
+              content: Text("OAuth")),
+          RadioButton(
+              checked: true,
+              onChanged: onChangeAuthType,
+              content: Text("PAT Auth")),
+          TextBox(placeholder: 'PAT Token', controller: patController),
+          Button(
+              child: Text("Test Server"),
+              onPressed: () => checkServer(jiraUrlController.text)),
+        ]);
   }
 
-  Widget _buildColorBlock(AppTheme appTheme, AccentColor color) {
-    return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: Button(
-        onPressed: () {
-          appTheme.color = color;
+  checkServer(String value) async {
+    // try and connect using PAT token
+    Future<http.Response> checkServerInt() {
+      var url = 'http://localhost:8080/rest/auth/1/session';
+
+      return http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer ${patController.text}',
+          'Content-Type': 'application/json',
         },
-        style: ButtonStyle(
-          padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-          backgroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.isPressed) {
-              return color.light;
-            } else if (states.isHovered) {
-              return color.lighter;
-            }
-            return color;
-          }),
-        ),
-        child: Container(
-          height: 40,
-          width: 40,
-          alignment: AlignmentDirectional.center,
-          child: appTheme.color == color
-              ? Icon(
-                  FluentIcons.check_mark,
-                  color: color.basedOnLuminance(),
-                  size: 22.0,
-                )
-              : null,
-        ),
-      ),
-    );
+      );
+    }
+
+    try {
+      var response = await checkServerInt();
+      print("Server check response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        print("Server is up and running");
+
+        // get the "name" from json
+        var name = jsonDecode(response.body)['name'];
+        print("Server name: $name");
+        await displayInfoBar(context, builder: (context, close) {
+          return InfoBar(
+            title: const Text('Success'),
+            content: Text(
+                'Success! You are logged into JIRA as "$name". You can now start tracking your worklogs.'),
+            action: IconButton(
+              icon: const Icon(FluentIcons.clear),
+              onPressed: close,
+            ),
+            severity: InfoBarSeverity.warning,
+          );
+        });
+      } else {
+        await displayInfoBar(context, builder: (context, close) {
+          return InfoBar(
+            title: const Text('Failure'),
+            content: Text(
+                'The server was reachable but returned an error code ${response.statusCode}.'),
+            action: IconButton(
+              icon: const Icon(FluentIcons.clear),
+              onPressed: close,
+            ),
+            severity: InfoBarSeverity.warning,
+          );
+        });
+      }
+      // Use the response variable here if needed
+    } catch (e) {
+      await displayInfoBar(context, builder: (context, close) {
+        return InfoBar(
+          title: const Text('Fail :()'),
+          content: Text('This failed with error $e'),
+          action: IconButton(
+            icon: const Icon(FluentIcons.clear),
+            onPressed: close,
+          ),
+          severity: InfoBarSeverity.warning,
+        );
+      });
+      // Handle the error here
+    }
+  }
+
+  void onChangeAuthType(bool value) {
+    print("Auth type changed: $value");
   }
 }
