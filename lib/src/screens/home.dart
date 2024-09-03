@@ -4,12 +4,12 @@ import 'dart:math';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:provider/provider.dart';
-import 'package:worklog_assistant/src/model/jira_model.dart';
+import 'package:worklog_assistant/src/providers/jira_provider.dart';
 import 'package:worklog_assistant/src/widgets/page.dart';
 import 'package:worklog_assistant/src/widgets/jiratable.dart';
 import 'package:http/http.dart' as http;
 
-import '../model/settings_provider.dart';
+import '../providers/settings_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> with PageMixin {
         header: PageHeader(
           title: const Text('Worklog Assistant'),
           commandBar: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Consumer<JiraModel>(builder: (context, jiraModel, child) {
+            Consumer<JiraProvider>(builder: (context, jiraModel, child) {
               return FilledButton(
                 onPressed: () => uploadWorklogs(jiraModel),
                 child: Row(
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> with PageMixin {
         );
   }
 
-  uploadWorklogs(JiraModel jiraModel) async {
+  uploadWorklogs(JiraProvider jiraModel) async {
     Future<http.Response> submitWorklogs(String jiraId, Duration timeLogged) {
       final settingsProvider =
           Provider.of<SettingsProvider>(context, listen: false);

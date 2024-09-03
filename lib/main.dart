@@ -4,7 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:worklog_assistant/src/theme.dart';
 import 'src/app.dart';
-import 'src/model/settings_provider.dart';
+import 'src/providers/settings_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:flutter/foundation.dart';

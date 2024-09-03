@@ -5,15 +5,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
 import 'package:url_launcher/link.dart';
 import 'package:window_manager/window_manager.dart';
-import 'model/tracking_model.dart';
+import 'providers/tracking_provider.dart';
 import 'screens/home.dart';
 import 'screens/settings.dart';
 import 'screens/tracking.dart';
 import 'package:worklog_assistant/src/theme.dart';
 import 'package:go_router/go_router.dart';
-import 'model/jira_model.dart';
+import 'providers/jira_provider.dart';
 
-import 'model/settings_provider.dart';
+import 'providers/settings_provider.dart';
 
 const String appTitle = 'Worklog Assistant';
 
@@ -31,9 +31,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => JiraModel()),
+          ChangeNotifierProvider(create: (context) => JiraProvider()),
           ChangeNotifierProvider(create: (context) => appTheme),
-          ChangeNotifierProvider(create: (context) => TrackingModel()),
+          ChangeNotifierProvider(create: (context) => TrackingProvider()),
           ChangeNotifierProvider(create: (context) => settingsProvider),
         ],
         builder: (context, child) {

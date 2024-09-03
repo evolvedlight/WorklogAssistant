@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:worklog_assistant/src/theme.dart';
 
-import '../model/jira_model.dart';
+import '../providers/jira_provider.dart';
 
 // Copyright 2019 The Flutter team. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -62,7 +62,7 @@ class JiraTableState extends State<JiraTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<JiraModel>(builder: (context, jiraModel, child) {
+    return Consumer<JiraProvider>(builder: (context, jiraModel, child) {
       final appTheme = context.watch<AppTheme>();
 
       return fluent.Column(children: [
@@ -162,12 +162,12 @@ class JiraTableState extends State<JiraTable> {
   }
 
   void deleteSelected() {
-    var jiraModel = Provider.of<JiraModel>(context, listen: false);
+    var jiraModel = Provider.of<JiraProvider>(context, listen: false);
     jiraModel.deletedSelected();
   }
 
   void createManualWorklog() {
-    var jiraModel = Provider.of<JiraModel>(context, listen: false);
+    var jiraModel = Provider.of<JiraProvider>(context, listen: false);
     jiraModel.add(WorklogEntry("New", Duration(), WorklogStatus.pending));
   }
 }
@@ -273,7 +273,7 @@ class RestorableDessertSelections extends RestorableProperty<Set<int>> {
 /// DataRows, keeps track of selected items, provides sprting capability
 class WorklogDataSource extends DataTableSource {
   WorklogDataSource.empty(this.context) {
-    context.read<JiraModel>().removeAll();
+    context.read<JiraProvider>().removeAll();
   }
 
   WorklogDataSource(this.context,
@@ -281,7 +281,7 @@ class WorklogDataSource extends DataTableSource {
       this.hasRowTaps = false,
       this.hasRowHeightOverrides = false,
       this.hasZebraStripes = false]) {
-    worklogEntries = context.watch<JiraModel>().items;
+    worklogEntries = context.watch<JiraProvider>().items;
     if (sortedByTimeLogged) {
       sort((d) => d.timeLogged, true);
     }

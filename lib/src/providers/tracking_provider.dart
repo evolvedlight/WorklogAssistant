@@ -1,11 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 
 // enum for tracking current state (stopped, started)
 enum TrackingState { stopped, started }
 
-class TrackingModel extends ChangeNotifier {
+class TrackingProvider extends ChangeNotifier {
   String currentIssue = "";
   Timer? callbackTimer;
   int secondsTimed = 0;
@@ -19,9 +18,7 @@ class TrackingModel extends ChangeNotifier {
     }
 
     callbackTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      print("Timer callback");
       secondsTimed++;
-      // notify the UI to change
       notifyListeners();
     });
 
@@ -30,6 +27,7 @@ class TrackingModel extends ChangeNotifier {
 
   void stopTime() {
     state = TrackingState.stopped;
+    secondsTimed = 0;
     callbackTimer?.cancel();
     notifyListeners();
   }

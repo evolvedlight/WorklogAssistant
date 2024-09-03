@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:worklog_assistant/src/database/jira_db_model.dart';
 import 'package:worklog_assistant/src/services/database_helper.dart';
 
-class JiraModel extends ChangeNotifier {
+class JiraProvider extends ChangeNotifier {
   late Future isInitCompleted;
 
   /// Internal, private state of the cart.
@@ -13,7 +13,7 @@ class JiraModel extends ChangeNotifier {
   /// An unmodifiable view of the items in the cart.
   UnmodifiableListView<WorklogEntry> get items => UnmodifiableListView(_items);
 
-  JiraModel() {
+  JiraProvider() {
     isInitCompleted = fetchAndSetJiras();
   }
 
@@ -31,7 +31,6 @@ class JiraModel extends ChangeNotifier {
   /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
   /// cart from the outside.
   void add(WorklogEntry item) async {
-    print("Adding item to cart: ${item.jiraId}");
     var id = await DatabaseHelper.insertJira(JiraDbModel(
         jiraId: item.jiraId,
         timeSpent: item.timeLogged,

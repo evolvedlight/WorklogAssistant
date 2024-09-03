@@ -1,9 +1,9 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
-import 'package:worklog_assistant/src/model/tracking_model.dart';
+import 'package:worklog_assistant/src/providers/tracking_provider.dart';
 import 'package:worklog_assistant/src/widgets/page.dart';
 
-import '../model/jira_model.dart';
+import '../providers/jira_provider.dart';
 
 class TrackingPage extends StatefulWidget {
   const TrackingPage({super.key});
@@ -55,12 +55,12 @@ class _TrackingPageState extends State<TrackingPage> with PageMixin {
                         ),
                       ),
                     )),
-                    Consumer<TrackingModel>(
+                    Consumer<TrackingProvider>(
                         builder: (context, trackingContext, child) => Expanded(
                             child: Text(
                                 formatTime(trackingContext.secondsTimed),
                                 style: TextStyle(fontSize: 24)))),
-                    Consumer<TrackingModel>(
+                    Consumer<TrackingProvider>(
                       builder: (context, trackingContext, child) => Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: trackingContext.state == TrackingState.started
@@ -91,8 +91,8 @@ class _TrackingPageState extends State<TrackingPage> with PageMixin {
   }
 
   changeIssue(String value) {
-    Provider.of<TrackingModel>(context, listen: false).currentIssue = value;
-    Provider.of<TrackingModel>(context, listen: false).startTime();
+    Provider.of<TrackingProvider>(context, listen: false).currentIssue = value;
+    Provider.of<TrackingProvider>(context, listen: false).startTime();
     print(value);
   }
 
@@ -104,17 +104,17 @@ class _TrackingPageState extends State<TrackingPage> with PageMixin {
   }
 
   void stopTracking() {
-    var trackingModel = Provider.of<TrackingModel>(context, listen: false);
+    var trackingModel = Provider.of<TrackingProvider>(context, listen: false);
     trackingModel.stopTime();
     var currentTime = trackingModel.secondsTimed;
-    var jiraModel = Provider.of<JiraModel>(context, listen: false);
+    var jiraModel = Provider.of<JiraProvider>(context, listen: false);
     var currentIssue = trackingModel.currentIssue;
     jiraModel.add(WorklogEntry(
         currentIssue, Duration(seconds: currentTime), WorklogStatus.pending));
   }
 
   void startTracking() {
-    var trackingModel = Provider.of<TrackingModel>(context, listen: false);
+    var trackingModel = Provider.of<TrackingProvider>(context, listen: false);
     trackingModel.currentIssue = issueController.text;
     trackingModel.startTime();
   }

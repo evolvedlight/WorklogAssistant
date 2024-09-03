@@ -6,7 +6,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-import '../model/settings_provider.dart';
+import '../providers/settings_provider.dart';
 import '../widgets/page.dart';
 
 class SettingsView extends StatefulWidget {
