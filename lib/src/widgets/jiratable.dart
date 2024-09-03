@@ -1,10 +1,8 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:worklog_assistant/theme.dart';
+import 'package:worklog_assistant/src/theme.dart';
 
 import '../model/jira_model.dart';
 
@@ -266,8 +264,6 @@ class RestorableDessertSelections extends RestorableProperty<Set<int>> {
   @override
   Object toPrimitives() => _worklogEntrySelections.toList();
 }
-
-int _idCounter = 0;
 
 /// Domain model entity
 

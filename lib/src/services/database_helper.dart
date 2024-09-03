@@ -1,6 +1,6 @@
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
-import 'package:worklog_assistant/database/jira_db_model.dart';
+import 'package:worklog_assistant/src/database/jira_db_model.dart';
 
 class DatabaseHelper {
   static const int _databaseVersion = 1;

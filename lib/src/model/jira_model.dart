@@ -1,8 +1,8 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:worklog_assistant/database/jira_db_model.dart';
-import 'package:worklog_assistant/services/database_helper.dart';
+import 'package:worklog_assistant/src/database/jira_db_model.dart';
+import 'package:worklog_assistant/src/services/database_helper.dart';
 
 class JiraModel extends ChangeNotifier {
   late Future isInitCompleted;

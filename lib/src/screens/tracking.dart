@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
-import 'package:worklog_assistant/model/tracking_model.dart';
-import 'package:worklog_assistant/widgets/page.dart';
+import 'package:worklog_assistant/src/model/tracking_model.dart';
+import 'package:worklog_assistant/src/widgets/page.dart';
 
 import '../model/jira_model.dart';
 

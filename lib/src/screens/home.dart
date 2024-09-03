@@ -1,14 +1,15 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
-import 'package:worklog_assistant/model/jira_model.dart';
-import 'package:worklog_assistant/widgets/page.dart';
-import 'package:data_table_2/data_table_2.dart';
-import 'package:worklog_assistant/widgets/jiratable.dart';
+import 'package:worklog_assistant/src/model/jira_model.dart';
+import 'package:worklog_assistant/src/widgets/page.dart';
+import 'package:worklog_assistant/src/widgets/jiratable.dart';
 import 'package:http/http.dart' as http;
+
+import '../model/settings_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -51,14 +52,16 @@ class _HomePageState extends State<HomePage> with PageMixin {
 
   uploadWorklogs(JiraModel jiraModel) async {
     Future<http.Response> submitWorklogs(String jiraId, Duration timeLogged) {
+      final settingsProvider =
+          Provider.of<SettingsProvider>(context, listen: false);
+
       var url =
-          'http://localhost:8080/rest/api/2/issue/$jiraId/worklog?adjustEstimate=leave';
+          '${settingsProvider.jiraUrl}/rest/api/2/issue/$jiraId/worklog?adjustEstimate=leave';
 
       return http.post(
         Uri.parse(url),
         headers: {
-          'Authorization':
-              'Bearer MDQ4NzY1MTQ4NDk1OrroeeMOMVWzFE/TwUSGnuDPT2bb',
+          'Authorization': 'Bearer ${settingsProvider.jiraPat}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
@@ -66,7 +69,7 @@ class _HomePageState extends State<HomePage> with PageMixin {
           "created": "2024-09-01T16:31:29.042+0000",
           "updated": "2024-09-01T16:31:29.042+0000",
           "started": "2024-09-01T16:31:00.000+0000",
-          "timeSpentSeconds": 3600
+          "timeSpentSeconds": max(timeLogged.inSeconds, 3600)
         }),
       );
     }
@@ -77,7 +80,7 @@ class _HomePageState extends State<HomePage> with PageMixin {
 
       if (result.statusCode != 201) {
         jiraModel.markAs(worklog.jiraId, WorklogStatus.error);
-        print('Error submitting worklog');
+        print('Error submitting worklog: ${result.body}');
         continue;
       } else {
         jiraModel.markAs(worklog.jiraId, WorklogStatus.submitted);
