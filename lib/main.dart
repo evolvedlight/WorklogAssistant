@@ -5,8 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:worklog_assistant/src/theme.dart';
 import 'src/app.dart';
 import 'src/model/settings_provider.dart';
-import 'src/settings/settings_controller.dart';
-import 'src/settings/settings_service.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:flutter/foundation.dart';
