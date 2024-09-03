@@ -34,3 +34,12 @@ jobs:
       with:
         name: WorklogAssistant-windows-${{ github.run_number}}
         path: build/windows/x64/runner/Release
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: |
+          build/windows/x64/runner/Release/*
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: "Release ${{ github.ref }}"
