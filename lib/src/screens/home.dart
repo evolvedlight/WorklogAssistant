@@ -9,7 +9,10 @@ import 'package:worklog_assistant/src/widgets/page.dart';
 import 'package:worklog_assistant/src/widgets/jiratable.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/enums/worklogstatus.dart';
 import '../providers/settings_provider.dart';
+import '../widgets/tracker.dart';
+import 'tracking.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -45,7 +48,12 @@ class _HomePageState extends State<HomePage> with PageMixin {
             })
           ]),
         ),
-        content: material.Material(child: JiraTable())
+        content: Column(
+          children: [
+            Expanded(child: material.Material(child: JiraTable())),
+            Tracker(),
+          ],
+        )
         // first the header - this will be a table layout with a first row that has a checkbox, then the id, the name and the time spent
         );
   }
@@ -74,16 +82,20 @@ class _HomePageState extends State<HomePage> with PageMixin {
       );
     }
 
-    for (var worklog in jiraModel.items) {
-      jiraModel.markAs(worklog.jiraId, WorklogStatus.submitting);
+    for (var worklog in jiraModel.items
+        .where((worklog) => worklog.status != WorklogStatus.submitted)) {
+      if (worklog.id == null) {
+        continue;
+      }
+      jiraModel.markAs(worklog.id!, WorklogStatus.submitting);
       var result = await submitWorklogs(worklog.jiraId, worklog.timeLogged);
 
       if (result.statusCode != 201) {
-        jiraModel.markAs(worklog.jiraId, WorklogStatus.error);
+        jiraModel.markAs(worklog.id!, WorklogStatus.error);
         print('Error submitting worklog: ${result.body}');
         continue;
       } else {
-        jiraModel.markAs(worklog.jiraId, WorklogStatus.submitted);
+        jiraModel.markAs(worklog.id!, WorklogStatus.submitted);
         print('Submitted Worklog');
       }
     }

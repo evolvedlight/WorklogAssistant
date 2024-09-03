@@ -10,11 +10,12 @@ class DatabaseHelper {
   static const String _jiraTable = "jira";
 
   static Future<Database> _getDB() async {
+    print("DB Path: ${join(await getDatabasesPath(), _databaseName)}");
     return openDatabase(
       join(await getDatabasesPath(), _databaseName),
       onCreate: (db, version) => {
         db.execute(
-            "CREATE TABLE $_jiraTable(id INTEGER PRIMARY KEY, jiraId TEXT, timeSpent INTEGER, startTime );")
+            "CREATE TABLE $_jiraTable(id INTEGER PRIMARY KEY, jiraId TEXT, timeSpent INTEGER, startTime DATETIME, worklogStatus int);")
       },
       version: _databaseVersion,
     );

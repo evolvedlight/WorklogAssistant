@@ -37,32 +37,34 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => settingsProvider),
         ],
         builder: (context, child) {
+          final intAppTheme = context.watch<AppTheme>();
+
           return FluentApp.router(
             title: appTitle,
-            themeMode: appTheme.mode,
-            color: appTheme.color,
+            themeMode: intAppTheme.mode,
+            color: intAppTheme.color,
             darkTheme: FluentThemeData(
               brightness: Brightness.dark,
-              accentColor: appTheme.color,
+              accentColor: intAppTheme.color,
               visualDensity: VisualDensity.standard,
               focusTheme: FocusThemeData(
                 glowFactor: is10footScreen(context) ? 2.0 : 0.0,
               ),
             ),
             theme: FluentThemeData(
-              accentColor: appTheme.color,
+              accentColor: intAppTheme.color,
               visualDensity: VisualDensity.standard,
               focusTheme: FocusThemeData(
                 glowFactor: is10footScreen(context) ? 2.0 : 0.0,
               ),
             ),
-            locale: appTheme.locale,
+            locale: intAppTheme.locale,
             builder: (context, child) {
               return Directionality(
-                textDirection: appTheme.textDirection,
+                textDirection: intAppTheme.textDirection,
                 child: NavigationPaneTheme(
                   data: NavigationPaneThemeData(
-                    backgroundColor: appTheme.windowEffect !=
+                    backgroundColor: intAppTheme.windowEffect !=
                             flutter_acrylic.WindowEffect.disabled
                         ? Colors.transparent
                         : null,
@@ -110,13 +112,13 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       title: const Text('Home'),
       body: const SizedBox.shrink(),
     ),
-    PaneItemHeader(header: const Text('Issue Tracking')),
-    PaneItem(
-      key: const ValueKey('/tracking'),
-      icon: const Icon(FluentIcons.button_control),
-      title: const Text('Track Time'),
-      body: const SizedBox.shrink(),
-    ),
+    // PaneItemHeader(header: const Text('Issue Tracking')),
+    // PaneItem(
+    //   key: const ValueKey('/tracking'),
+    //   icon: const Icon(FluentIcons.button_control),
+    //   title: const Text('Track Time'),
+    //   body: const SizedBox.shrink(),
+    // ),
   ].map<NavigationPaneItem>((e) {
     PaneItem buildPaneItem(PaneItem item) {
       return PaneItem(
@@ -165,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     _LinkPaneItemAction(
       icon: const Icon(FluentIcons.open_source),
       title: const Text('Source code'),
-      link: 'https://github.com/bdlukaa/fluent_ui',
+      link: 'https://github.com/evolvedlight/WorklogAssistant',
       body: const SizedBox.shrink(),
     ),
   ];
@@ -476,13 +478,10 @@ final router = GoRouter(navigatorKey: rootNavigatorKey, routes: [
       );
     },
     routes: <GoRoute>[
-      /// Home
       GoRoute(path: '/', builder: (context, state) => const HomePage()),
-
-      /// Settings
       GoRoute(path: '/settings', builder: (context, state) => SettingsView()),
-      GoRoute(
-          path: '/tracking', builder: (context, state) => const TrackingPage()),
+      // GoRoute(
+      //     path: '/tracking', builder: (context, state) => const TrackingPage()),
     ],
   ),
 ]);

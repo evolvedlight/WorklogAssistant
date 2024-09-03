@@ -4,6 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:worklog_assistant/src/database/jira_db_model.dart';
 import 'package:worklog_assistant/src/services/database_helper.dart';
 
+import '../models/enums/worklogstatus.dart';
+import '../models/worklogentry.dart';
+
 class JiraProvider extends ChangeNotifier {
   late Future isInitCompleted;
 
@@ -21,7 +24,8 @@ class JiraProvider extends ChangeNotifier {
     var data = await DatabaseHelper.getJiras();
 
     _items.addAll(data.map((e) =>
-        WorklogEntry(e.jiraId, e.timeSpent, WorklogStatus.pending)..id = e.id));
+        WorklogEntry(e.jiraId, e.timeSpent, e.worklogStatus)..id = e.id));
+    notifyListeners();
   }
 
   /// The sum of all worklogs's time logged
@@ -34,7 +38,8 @@ class JiraProvider extends ChangeNotifier {
     var id = await DatabaseHelper.insertJira(JiraDbModel(
         jiraId: item.jiraId,
         timeSpent: item.timeLogged,
-        startTime: DateTime.now()));
+        startTime: DateTime.now(),
+        worklogStatus: item.status));
     item.id = id;
     _items.add(item);
     // This call tells the widgets that are listening to this model to rebuild.
@@ -60,32 +65,17 @@ class JiraProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void markAs(String jiraId, WorklogStatus status) {
-    var item = _items.firstWhere((element) => element.jiraId == jiraId);
+  void markAs(int id, WorklogStatus status) {
+    var item = _items.firstWhere((element) => element.id == id);
     item.status = status;
     // TODO: add status to database
     DatabaseHelper.updateJira(JiraDbModel(
         id: item.id,
         jiraId: item.jiraId,
         timeSpent: item.timeLogged,
-        startTime: DateTime.now()));
+        startTime: DateTime.now(),
+        worklogStatus: status));
 
     notifyListeners();
   }
 }
-
-class WorklogEntry {
-  WorklogEntry(
-    this.jiraId,
-    this.timeLogged,
-    this.status,
-  );
-
-  final String jiraId;
-  final Duration timeLogged;
-  int? id;
-  WorklogStatus status;
-  bool selected = false;
-}
-
-enum WorklogStatus { pending, submitting, submitted, error }

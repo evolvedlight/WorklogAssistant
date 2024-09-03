@@ -4,14 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:worklog_assistant/src/theme.dart';
 
+import '../models/enums/worklogstatus.dart';
+import '../models/worklogentry.dart';
 import '../providers/jira_provider.dart';
-
-// Copyright 2019 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// The file was extracted from GitHub: https://github.com/flutter/gallery
-// Changes and modifications by Maxim Saplin, 2021
 
 class JiraTable extends StatefulWidget {
   const JiraTable({super.key});
@@ -128,8 +123,6 @@ class JiraTableState extends State<JiraTable> {
                           DataColumn2(
                             label: const Text('Jira ID'),
                             size: ColumnSize.S,
-                            onSort: (columnIndex, ascending) => _sort<String>(
-                                (d) => d.jiraId, columnIndex, ascending),
                           ),
                           DataColumn2(
                             label: const Text('Summary'),
@@ -140,10 +133,6 @@ class JiraTableState extends State<JiraTable> {
                             label: const Text('Time Logged'),
                             size: ColumnSize.S,
                             numeric: true,
-                            onSort: (columnIndex, ascending) => _sort<num>(
-                                (d) => d.timeLogged.inSeconds,
-                                columnIndex,
-                                ascending),
                           ),
                           DataColumn2(
                             label: const Text('Status'),
@@ -172,67 +161,14 @@ class JiraTableState extends State<JiraTable> {
   }
 }
 
-class _ScrollXYButton extends StatefulWidget {
-  const _ScrollXYButton(this.controller, this.title);
-
-  final ScrollController controller;
-  final String title;
-
-  @override
-  _ScrollXYButtonState createState() => _ScrollXYButtonState();
-}
-
-class _ScrollXYButtonState extends State<_ScrollXYButton> {
-  bool _showScrollXY = false;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.addListener(() {
-      if (widget.controller.position.pixels > 20 && !_showScrollXY) {
-        setState(() {
-          _showScrollXY = true;
-        });
-      } else if (widget.controller.position.pixels < 20 && _showScrollXY) {
-        setState(() {
-          _showScrollXY = false;
-        });
-      }
-      // On GitHub there was a question on how to determine the event
-      // of widget being scrolled to the bottom. Here's the sample
-      // if (widget.controller.position.hasViewportDimension &&
-      //     widget.controller.position.pixels >=
-      //         widget.controller.position.maxScrollExtent - 0.01) {
-      //   print('Scrolled to bottom');
-      //}
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _showScrollXY
-        ? OutlinedButton(
-            onPressed: () => widget.controller.animateTo(0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeIn),
-            style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(Colors.grey[800]),
-                foregroundColor: WidgetStateProperty.all(Colors.white)),
-            child: Text(widget.title),
-          )
-        : const SizedBox();
-  }
-}
-
-class RestorableDessertSelections extends RestorableProperty<Set<int>> {
+class RestorableWorklogEntrySelections extends RestorableProperty<Set<int>> {
   Set<int> _worklogEntrySelections = {};
 
-  /// Returns whether or not a dessert row is selected by index.
   bool isSelected(int index) => _worklogEntrySelections.contains(index);
 
-  /// Takes a list of [Dessert]s and saves the row indices of selected rows
+  /// Takes a list of [WorklogEntry]s and saves the row indices of selected rows
   /// into a [Set].
-  void setDessertSelections(List<WorklogEntry> worklogEntries) {
+  void setWorklogEntrySelections(List<WorklogEntry> worklogEntries) {
     final updatedSet = <int>{};
     for (var i = 0; i < worklogEntries.length; i += 1) {
       var worklogEntry = worklogEntries[i];
@@ -266,11 +202,6 @@ class RestorableDessertSelections extends RestorableProperty<Set<int>> {
 }
 
 /// Domain model entity
-
-/// Data source implementing standard Flutter's DataTableSource abstract class
-/// which is part of DataTable and PaginatedDataTable synchronous data fecthin API.
-/// This class uses static collection of deserts as a data store, projects it into
-/// DataRows, keeps track of selected items, provides sprting capability
 class WorklogDataSource extends DataTableSource {
   WorklogDataSource.empty(this.context) {
     context.read<JiraProvider>().removeAll();
@@ -308,7 +239,7 @@ class WorklogDataSource extends DataTableSource {
     notifyListeners();
   }
 
-  void updateSelectedDesserts(RestorableDessertSelections selectedRows) {
+  void updateSelectedWorklogs(RestorableWorklogEntrySelections selectedRows) {
     _selectedCount = 0;
     for (var i = 0; i < worklogEntries.length; i += 1) {
       var worklogEntry = worklogEntries[i];
@@ -368,7 +299,7 @@ class WorklogDataSource extends DataTableSource {
                     print('onSubmited ${worklogEntry.jiraId} $val');
                   }),
               showEditIcon: true),
-          DataCell(Text(worklogEntry.status.toString())),
+          DataCell(Text(convertWorklogToNiceString(worklogEntry.status))),
         ]);
   }
 
@@ -390,6 +321,21 @@ class WorklogDataSource extends DataTableSource {
   }
 
   updateValue(double? value) {}
+
+  convertWorklogToNiceString(WorklogStatus status) {
+    switch (status) {
+      case WorklogStatus.pending:
+        return "Pending";
+      case WorklogStatus.submitted:
+        return "Submitted";
+      case WorklogStatus.submitting:
+        return "Submitting..";
+      case WorklogStatus.error:
+        return "Failed";
+      default:
+        return "Unknown";
+    }
+  }
 }
 
 int _selectedCount = 0;

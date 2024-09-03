@@ -27,8 +27,12 @@ class TrackingProvider extends ChangeNotifier {
 
   void stopTime() {
     state = TrackingState.stopped;
-    secondsTimed = 0;
     callbackTimer?.cancel();
+    notifyListeners();
+  }
+
+  void resetTime() {
+    secondsTimed = 0;
     notifyListeners();
   }
 }
