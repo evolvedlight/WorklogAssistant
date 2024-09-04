@@ -8,7 +8,6 @@ import 'package:window_manager/window_manager.dart';
 import 'providers/tracking_provider.dart';
 import 'screens/home.dart';
 import 'screens/settings.dart';
-import 'screens/tracking.dart';
 import 'package:worklog_assistant/src/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'providers/jira_provider.dart';
@@ -148,8 +147,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         }).toList(),
       );
     }
-    if (e is PaneItem) return buildPaneItem(e);
-    return e;
+    return buildPaneItem(e);
   }).toList();
   late final List<NavigationPaneItem> footerItems = [
     PaneItemSeparator(),

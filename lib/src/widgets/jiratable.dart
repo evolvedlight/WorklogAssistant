@@ -35,18 +35,6 @@ class JiraTableState extends State<JiraTable> {
     }
   }
 
-  void _sort<T>(
-    Comparable<T> Function(WorklogEntry d) getField,
-    int columnIndex,
-    bool ascending,
-  ) {
-    _worklogEntriesDataSource.sort<T>(getField, ascending);
-    setState(() {
-      _sortColumnIndex = columnIndex;
-      _sortAscending = ascending;
-    });
-  }
-
   @override
   void dispose() {
     _worklogEntriesDataSource.dispose();

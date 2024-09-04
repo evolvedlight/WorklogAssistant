@@ -49,11 +49,16 @@ dependencies:
   http: ^1.2.2
   shared_preferences: ^2.3.2
   path: ^1.9.0
+  msvcredist:
+    git:
+      url: https://github.com/insertjokehere/flutter_msvcredist.git
+      ref: main
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   sqflite_common_ffi:
+  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

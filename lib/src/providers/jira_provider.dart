@@ -68,7 +68,6 @@ class JiraProvider extends ChangeNotifier {
   void markAs(int id, WorklogStatus status) {
     var item = _items.firstWhere((element) => element.id == id);
     item.status = status;
-    // TODO: add status to database
     DatabaseHelper.updateJira(JiraDbModel(
         id: item.id,
         jiraId: item.jiraId,

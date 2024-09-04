@@ -12,7 +12,6 @@ import 'package:http/http.dart' as http;
 import '../models/enums/worklogstatus.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/tracker.dart';
-import 'tracking.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

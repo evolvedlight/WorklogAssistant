@@ -72,7 +72,7 @@ class _TrackerPageState extends State<Tracker> {
                                     Text("Stop"),
                                     Padding(
                                       padding: const EdgeInsets.all(5.0),
-                                      child: Container(
+                                      child: SizedBox(
                                         width: 18,
                                         height: 18,
                                         child: ProgressRing(),
