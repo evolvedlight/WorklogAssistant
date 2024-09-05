@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:worklog_assistant/src/providers/jira_provider.dart';
 import 'package:worklog_assistant/src/widgets/page.dart';
@@ -40,7 +41,7 @@ class _HomePageState extends State<HomePage> with PageMixin {
                     Icon(FluentIcons.cloud_upload),
                     SizedBox(width: 8.0),
                     Text(
-                        "Submit Worklogs (${formatTotalLoggedTime(jiraModel.totalLoggedTime)})")
+                        "Submit Worklogs (${formatTotalLoggedTime(jiraModel.totalUnsubmittedTime)})")
                   ],
                 ),
               );
@@ -58,27 +59,26 @@ class _HomePageState extends State<HomePage> with PageMixin {
   }
 
   uploadWorklogs(JiraProvider jiraModel) async {
-    Future<http.Response> submitWorklogs(String jiraId, Duration timeLogged) {
+    Future<http.Response> submitWorklogs(
+        String jiraId, Duration timeLogged, DateTime startTime) {
       final settingsProvider =
           Provider.of<SettingsProvider>(context, listen: false);
 
       var url =
           '${settingsProvider.jiraUrl}/rest/api/2/issue/$jiraId/worklog?adjustEstimate=leave';
 
-      return http.post(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer ${settingsProvider.jiraPat}',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          "comment": "Did it",
-          "created": "2024-09-01T16:31:29.042+0000",
-          "updated": "2024-09-01T16:31:29.042+0000",
-          "started": "2024-09-01T16:31:00.000+0000",
-          "timeSpentSeconds": max(timeLogged.inSeconds, 3600)
-        }),
-      );
+      var body = jsonEncode({
+        "started": formatForJiraTime(startTime),
+        "timeSpentSeconds": max(timeLogged.inSeconds, 60)
+      });
+
+      print(body);
+      return http.post(Uri.parse(url),
+          headers: {
+            'Authorization': 'Bearer ${settingsProvider.jiraPat}',
+            'Content-Type': 'application/json',
+          },
+          body: body);
     }
 
     for (var worklog in jiraModel.items
@@ -87,7 +87,8 @@ class _HomePageState extends State<HomePage> with PageMixin {
         continue;
       }
       jiraModel.markAs(worklog.id!, WorklogStatus.submitting);
-      var result = await submitWorklogs(worklog.jiraId, worklog.timeLogged);
+      var result = await submitWorklogs(
+          worklog.jiraId, worklog.timeLogged, worklog.startTime);
 
       if (result.statusCode != 201) {
         jiraModel.markAs(worklog.id!, WorklogStatus.error);
@@ -98,6 +99,19 @@ class _HomePageState extends State<HomePage> with PageMixin {
         print('Submitted Worklog');
       }
     }
+  }
+
+  String formatForJiraTime(DateTime startTime) {
+    DateFormat formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    String formattedStartTime = formatter.format(startTime.toUtc());
+    String timezoneOffset = startTime.timeZoneOffset.isNegative ? '-' : '+';
+    timezoneOffset +=
+        startTime.timeZoneOffset.inHours.abs().toString().padLeft(2, '0');
+    timezoneOffset += (startTime.timeZoneOffset.inMinutes.abs() % 60)
+        .toString()
+        .padLeft(2, '0');
+    var result = "$formattedStartTime$timezoneOffset";
+    return result;
   }
 
   formatTotalLoggedTime(double totalLoggedTime) {

@@ -113,14 +113,14 @@ class JiraTableState extends State<JiraTable> {
                             size: ColumnSize.S,
                           ),
                           DataColumn2(
-                            label: const Text('Summary'),
+                            label: const Text('Jira Summary'),
                             size: ColumnSize.M,
                             numeric: false,
                           ),
                           DataColumn2(
                             label: const Text('Time Logged'),
                             size: ColumnSize.S,
-                            numeric: true,
+                            numeric: false,
                           ),
                           DataColumn2(
                             label: const Text('Status'),
