@@ -32,6 +32,10 @@ class JiraProvider extends ChangeNotifier {
   double get totalLoggedTime => _items.fold(
       0.0, (total, current) => total + current.timeLogged.inSeconds);
 
+  double get totalUnsubmittedTime => _items
+      .where((item) => item.status != WorklogStatus.submitted)
+      .fold(0.0, (total, current) => total + current.timeLogged.inSeconds);
+
   /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
   /// cart from the outside.
   void add(WorklogEntry item) async {
