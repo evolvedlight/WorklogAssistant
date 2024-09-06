@@ -1,0 +1,9 @@
+{
+  "cmake.sourceDirectory": "C:/Users/StephenBrown/dev/flutterproj/worklog_assistant/worklog_assistant/windows/flutter",
+  "dart.lineLength": 160,
+  "[dart]": {
+    "editor.rulers": [
+        160
+    ],
+}
+}

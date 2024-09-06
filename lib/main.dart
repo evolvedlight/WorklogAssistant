@@ -1,17 +1,20 @@
 import 'dart:io';
 
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:worklog_assistant/src/theme.dart';
 import 'src/app.dart';
-import 'src/providers/settings_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
 import 'package:window_manager/window_manager.dart';
 
-void main() async {
+import 'src/storage/prefs.dart';
+
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) => throw UnimplementedError());
+
+Future<void> main() async {
   // Setup SQLite
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -45,17 +48,38 @@ void main() async {
     await windowManager.setSkipTaskbar(false);
   });
 
-  var settingsProvider = SettingsProvider();
-  await settingsProvider.loadSettings();
-
-  var appTheme = AppTheme();
   final prefs = await SharedPreferences.getInstance();
-  var mode = prefs.getString('appTheme.mode');
-  if (mode != null) {
-    appTheme.mode = mode == 'dark' ? ThemeMode.dark : ThemeMode.light;
-  } else {
-    appTheme.mode = ThemeMode.system;
-  }
+  runApp(ProviderScope(overrides: [
+    sharedPreferencesProvider.overrideWithValue(prefs),
+  ], child: DummyStartApp()));
+}
 
-  runApp(MyApp(settingsProvider: settingsProvider, appTheme: appTheme));
+class DummyStartApp extends StatelessWidget {
+  const DummyStartApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const _EagerInitialization(
+      child: MyApp(),
+    );
+  }
+}
+
+class _EagerInitialization extends ConsumerWidget {
+  const _EagerInitialization({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final values = [
+      ref.watch(prefsProvider),
+      //ref.watch(secureStorageProvider),
+    ];
+
+    if (values.every((value) => value.hasValue)) {
+      return child;
+    }
+
+    return const SizedBox();
+  }
 }

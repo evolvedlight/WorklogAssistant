@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsProvider with ChangeNotifier {
@@ -38,3 +39,9 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+
+final settingsProvider = ChangeNotifierProvider<SettingsProvider>((ref) {
+  var s = SettingsProvider();
+  s.loadSettings();
+  return s;
+});

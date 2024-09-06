@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:worklog_assistant/src/providers/jira_provider.dart';
 import 'package:worklog_assistant/src/widgets/page.dart';
 import 'package:worklog_assistant/src/widgets/jiratable.dart';
@@ -14,14 +13,16 @@ import '../models/enums/worklogstatus.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/tracker.dart';
 
-class HomePage extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+
+class HomePage extends riverpod.ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with PageMixin {
+class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
   bool selected = true;
   String? comboboxValue;
 
@@ -29,23 +30,23 @@ class _HomePageState extends State<HomePage> with PageMixin {
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
 
+    final jiraProviderRef = ref.watch(jiraProvider);
+    final settingsProviderRef = ref.watch(settingsProvider);
+
     return ScaffoldPage(
         header: PageHeader(
           title: const Text('Worklog Assistant'),
           commandBar: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Consumer<JiraProvider>(builder: (context, jiraModel, child) {
-              return FilledButton(
-                onPressed: () => uploadWorklogs(jiraModel),
-                child: Row(
-                  children: [
-                    Icon(FluentIcons.cloud_upload),
-                    SizedBox(width: 8.0),
-                    Text(
-                        "Submit Worklogs (${formatTotalLoggedTime(jiraModel.totalUnsubmittedTime)})")
-                  ],
-                ),
-              );
-            })
+            FilledButton(
+              onPressed: () => uploadWorklogs(jiraProviderRef, settingsProviderRef),
+              child: Row(
+                children: [
+                  Icon(FluentIcons.cloud_upload),
+                  SizedBox(width: 8.0),
+                  Text("Submit Worklogs (${formatTotalLoggedTime(jiraProviderRef.totalUnsubmittedTime)})")
+                ],
+              ),
+            )
           ]),
         ),
         content: Column(
@@ -58,37 +59,27 @@ class _HomePageState extends State<HomePage> with PageMixin {
         );
   }
 
-  uploadWorklogs(JiraProvider jiraModel) async {
-    Future<http.Response> submitWorklogs(
-        String jiraId, Duration timeLogged, DateTime startTime) {
-      final settingsProvider =
-          Provider.of<SettingsProvider>(context, listen: false);
+  uploadWorklogs(JiraProvider jiraModel, SettingsProvider settings) async {
+    Future<http.Response> submitWorklogs(String jiraId, Duration timeLogged, DateTime startTime) {
+      var url = '${settings.jiraUrl}/rest/api/2/issue/$jiraId/worklog?adjustEstimate=leave';
 
-      var url =
-          '${settingsProvider.jiraUrl}/rest/api/2/issue/$jiraId/worklog?adjustEstimate=leave';
-
-      var body = jsonEncode({
-        "started": formatForJiraTime(startTime),
-        "timeSpentSeconds": max(timeLogged.inSeconds, 60)
-      });
+      var body = jsonEncode({"started": formatForJiraTime(startTime), "timeSpentSeconds": max(timeLogged.inSeconds, 60)});
 
       print(body);
       return http.post(Uri.parse(url),
           headers: {
-            'Authorization': 'Bearer ${settingsProvider.jiraPat}',
+            'Authorization': 'Bearer ${settings.jiraPat}',
             'Content-Type': 'application/json',
           },
           body: body);
     }
 
-    for (var worklog in jiraModel.items
-        .where((worklog) => worklog.status != WorklogStatus.submitted)) {
+    for (var worklog in jiraModel.items.where((worklog) => worklog.status != WorklogStatus.submitted)) {
       if (worklog.id == null) {
         continue;
       }
       jiraModel.markAs(worklog.id!, WorklogStatus.submitting);
-      var result = await submitWorklogs(
-          worklog.jiraId, worklog.timeLogged, worklog.startTime);
+      var result = await submitWorklogs(worklog.jiraId, worklog.timeLogged, worklog.startTime);
 
       if (result.statusCode != 201) {
         jiraModel.markAs(worklog.id!, WorklogStatus.error);
@@ -105,11 +96,8 @@ class _HomePageState extends State<HomePage> with PageMixin {
     DateFormat formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
     String formattedStartTime = formatter.format(startTime.toUtc());
     String timezoneOffset = startTime.timeZoneOffset.isNegative ? '-' : '+';
-    timezoneOffset +=
-        startTime.timeZoneOffset.inHours.abs().toString().padLeft(2, '0');
-    timezoneOffset += (startTime.timeZoneOffset.inMinutes.abs() % 60)
-        .toString()
-        .padLeft(2, '0');
+    timezoneOffset += startTime.timeZoneOffset.inHours.abs().toString().padLeft(2, '0');
+    timezoneOffset += (startTime.timeZoneOffset.inMinutes.abs() % 60).toString().padLeft(2, '0');
     var result = "$formattedStartTime$timezoneOffset";
     return result;
   }

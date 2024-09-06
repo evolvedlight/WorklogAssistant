@@ -4,62 +4,50 @@ import 'dart:convert';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 import '../providers/settings_provider.dart';
 import '../widgets/page.dart';
 
-class SettingsView extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+
+class SettingsView extends riverpod.ConsumerStatefulWidget {
   const SettingsView({super.key});
 
   static const routeName = '/settings';
 
   @override
-  State<SettingsView> createState() => _SettingsViewState();
+  SettingsViewState createState() => SettingsViewState();
 }
 
-class _SettingsViewState extends State<SettingsView> with PageMixin {
+class SettingsViewState extends riverpod.ConsumerState<SettingsView> with PageMixin {
   final jiraUrlController = TextEditingController();
   final patController = TextEditingController();
 
   @override
   void initState() {
-    var provider = Provider.of<SettingsProvider>(context, listen: false);
-    jiraUrlController.text = provider.jiraUrl;
-    patController.text = provider.jiraPat;
+    var settings = ref.watch(settingsProvider);
+    jiraUrlController.text = settings.jiraUrl;
+    patController.text = settings.jiraPat;
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldPage.scrollable(
-        header: const PageHeader(title: Text('Settings')),
-        children: [
-          Text("JIRA Connection"),
-          TextBox(
-            placeholder: 'JIRA URL',
-            expands: false,
-            controller: jiraUrlController,
-          ),
-          RadioButton(
-              checked: false,
-              onChanged: onChangeAuthType,
-              content: Text("Basic Auth")),
-          RadioButton(
-              checked: false,
-              onChanged: onChangeAuthType,
-              content: Text("OAuth")),
-          RadioButton(
-              checked: true,
-              onChanged: onChangeAuthType,
-              content: Text("PAT Auth")),
-          TextBox(placeholder: 'PAT Token', controller: patController),
-          Button(
-              child: Text("Test Server"),
-              onPressed: () => checkServer(jiraUrlController.text)),
-          Button(child: Text("Save"), onPressed: () => saveSettings())
-        ]);
+    return ScaffoldPage.scrollable(header: const PageHeader(title: Text('Settings')), children: [
+      Text("JIRA Connection"),
+      TextBox(
+        placeholder: 'JIRA URL',
+        expands: false,
+        controller: jiraUrlController,
+      ),
+      RadioButton(checked: false, onChanged: onChangeAuthType, content: Text("Basic Auth")),
+      RadioButton(checked: false, onChanged: onChangeAuthType, content: Text("OAuth")),
+      RadioButton(checked: true, onChanged: onChangeAuthType, content: Text("PAT Auth")),
+      TextBox(placeholder: 'PAT Token', controller: patController),
+      Button(child: Text("Test Server"), onPressed: () => checkServer(jiraUrlController.text)),
+      Button(child: Text("Save"), onPressed: () => saveSettings())
+    ]);
   }
 
   checkServer(String value) async {
@@ -89,8 +77,7 @@ class _SettingsViewState extends State<SettingsView> with PageMixin {
         await displayInfoBar(context, builder: (context, close) {
           return InfoBar(
             title: const Text('Success'),
-            content: Text(
-                'Success! You are logged into JIRA as "$name". You can now start tracking your worklogs.'),
+            content: Text('Success! You are logged into JIRA as "$name". You can now start tracking your worklogs.'),
             action: IconButton(
               icon: const Icon(FluentIcons.clear),
               onPressed: close,
@@ -102,8 +89,7 @@ class _SettingsViewState extends State<SettingsView> with PageMixin {
         await displayInfoBar(context, builder: (context, close) {
           return InfoBar(
             title: const Text('Failure'),
-            content: Text(
-                'The server was reachable but returned an error code ${response.statusCode}.'),
+            content: Text('The server was reachable but returned an error code ${response.statusCode}.'),
             action: IconButton(
               icon: const Icon(FluentIcons.clear),
               onPressed: close,
@@ -134,10 +120,9 @@ class _SettingsViewState extends State<SettingsView> with PageMixin {
   }
 
   saveSettings() async {
-    final settingsProvider =
-        Provider.of<SettingsProvider>(context, listen: false);
+    var settings = ref.watch(settingsProvider.notifier);
 
-    settingsProvider.updateJiraUrl(jiraUrlController.text);
-    settingsProvider.updateJiraPat(patController.text);
+    settings.updateJiraUrl(jiraUrlController.text);
+    settings.updateJiraPat(patController.text);
   }
 }

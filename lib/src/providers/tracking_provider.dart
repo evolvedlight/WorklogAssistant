@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // enum for tracking current state (stopped, started)
 enum TrackingState { stopped, started }
@@ -36,3 +37,7 @@ class TrackingProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+final trackingProvider = ChangeNotifierProvider<TrackingProvider>((ref) {
+  return TrackingProvider();
+});

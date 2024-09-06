@@ -1,86 +1,57 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
 import 'package:url_launcher/link.dart';
 import 'package:window_manager/window_manager.dart';
-import 'providers/tracking_provider.dart';
 import 'screens/home.dart';
 import 'screens/settings.dart';
-import 'package:worklog_assistant/src/theme.dart';
+import 'package:worklog_assistant/src/providers/settings.dart';
 import 'package:go_router/go_router.dart';
-import 'providers/jira_provider.dart';
+import 'package:system_theme/system_theme.dart';
 
-import 'providers/settings_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 const String appTitle = 'Worklog Assistant';
 
-class MyApp extends StatelessWidget {
-  const MyApp({
-    super.key,
-    required this.settingsProvider,
-    required this.appTheme,
-  });
-
-  final SettingsProvider settingsProvider;
-  final AppTheme appTheme;
+class MyApp extends riverpod.ConsumerWidget {
+  const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => JiraProvider()),
-          ChangeNotifierProvider(create: (context) => appTheme),
-          ChangeNotifierProvider(create: (context) => TrackingProvider()),
-          ChangeNotifierProvider(create: (context) => settingsProvider),
-        ],
-        builder: (context, child) {
-          final intAppTheme = context.watch<AppTheme>();
+  Widget build(BuildContext context, riverpod.WidgetRef ref) {
+    // final intAppTheme = ref.watch(appTheme);
+    // final appThemeMode = ref.watch(appThemeModeProvider);
+    final themeMode = ref.watch(currentThemeModeProvider);
 
-          return FluentApp.router(
-            title: appTitle,
-            themeMode: intAppTheme.mode,
-            color: intAppTheme.color,
-            darkTheme: FluentThemeData(
-              brightness: Brightness.dark,
-              accentColor: intAppTheme.color,
-              visualDensity: VisualDensity.standard,
-              focusTheme: FocusThemeData(
-                glowFactor: is10footScreen(context) ? 2.0 : 0.0,
-              ),
-            ),
-            theme: FluentThemeData(
-              accentColor: intAppTheme.color,
-              visualDensity: VisualDensity.standard,
-              focusTheme: FocusThemeData(
-                glowFactor: is10footScreen(context) ? 2.0 : 0.0,
-              ),
-            ),
-            locale: intAppTheme.locale,
-            builder: (context, child) {
-              return Directionality(
-                textDirection: intAppTheme.textDirection,
-                child: NavigationPaneTheme(
-                  data: NavigationPaneThemeData(
-                    backgroundColor: intAppTheme.windowEffect !=
-                            flutter_acrylic.WindowEffect.disabled
-                        ? Colors.transparent
-                        : null,
-                  ),
-                  child: child!,
-                ),
-              );
-            },
-            routeInformationParser: router.routeInformationParser,
-            routerDelegate: router.routerDelegate,
-            routeInformationProvider: router.routeInformationProvider,
-          );
-        });
+    return FluentApp.router(
+      title: appTitle,
+      themeMode: themeMode,
+      color: SystemTheme.accentColor.dark,
+      darkTheme: FluentThemeData(
+        brightness: Brightness.dark,
+        visualDensity: VisualDensity.standard,
+        focusTheme: FocusThemeData(
+          glowFactor: is10footScreen(context) ? 2.0 : 0.0,
+        ),
+      ),
+      theme: FluentThemeData(
+        visualDensity: VisualDensity.standard,
+        focusTheme: FocusThemeData(
+          glowFactor: is10footScreen(context) ? 2.0 : 0.0,
+        ),
+      ),
+      builder: (context, child) {
+        return NavigationPaneTheme(
+          data: NavigationPaneThemeData(backgroundColor: null),
+          child: child!,
+        );
+      },
+      routeInformationParser: router.routeInformationParser,
+      routerDelegate: router.routerDelegate,
+      routeInformationProvider: router.routeInformationProvider,
+    );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends riverpod.ConsumerStatefulWidget {
   const MyHomePage({
     super.key,
     required this.child,
@@ -91,10 +62,10 @@ class MyHomePage extends StatefulWidget {
   final BuildContext? shellContext;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with WindowListener {
+class MyHomePageState extends riverpod.ConsumerState<MyHomePage> with WindowListener {
   bool value = false;
 
   // int index = 0;
@@ -186,24 +157,14 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
 
   int _calculateSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-    int indexOriginal = originalItems
-        .where((item) => item.key != null)
-        .toList()
-        .indexWhere((item) => item.key == Key(location));
+    int indexOriginal = originalItems.where((item) => item.key != null).toList().indexWhere((item) => item.key == Key(location));
 
     if (indexOriginal == -1) {
-      int indexFooter = footerItems
-          .where((element) => element.key != null)
-          .toList()
-          .indexWhere((element) => element.key == Key(location));
+      int indexFooter = footerItems.where((element) => element.key != null).toList().indexWhere((element) => element.key == Key(location));
       if (indexFooter == -1) {
         return 0;
       }
-      return originalItems
-              .where((element) => element.key != null)
-              .toList()
-              .length +
-          indexFooter;
+      return originalItems.where((element) => element.key != null).toList().length + indexFooter;
     } else {
       return indexOriginal;
     }
@@ -213,7 +174,10 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   Widget build(BuildContext context) {
     final localizations = FluentLocalizations.of(context);
 
-    final appTheme = context.watch<AppTheme>();
+    // final appThemeMode = ref.watch(appThemeModeProvider);
+    // final appThemeRef = ref.watch(appTheme);
+    //final themeMode = ref.watch(currentThemeModeProvider);
+
     if (widget.shellContext != null) {
       if (router.canPop() == false) {
         setState(() {});
@@ -284,14 +248,8 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                 content: const Text('Dark Mode'),
                 checked: FluentTheme.of(context).brightness.isDark,
                 onChanged: (v) async {
-                  final prefs = await SharedPreferences.getInstance();
-                  if (v) {
-                    prefs.setString("appTheme.mode", "dark");
-                    appTheme.mode = ThemeMode.dark;
-                  } else {
-                    prefs.setString("appTheme.mode", "light");
-                    appTheme.mode = ThemeMode.light;
-                  }
+                  var themeMode = v ? ThemeMode.dark : ThemeMode.light;
+                  ref.read(currentThemeModeProvider.notifier).set(themeMode);
                 },
               ),
             ),
@@ -300,8 +258,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         ]),
       ),
       paneBodyBuilder: (item, child) {
-        final name =
-            item?.key is ValueKey ? (item!.key as ValueKey).value : null;
+        final name = item?.key is ValueKey ? (item!.key as ValueKey).value : null;
         return FocusTraversalGroup(
           key: ValueKey('body$name'),
           child: widget.child,
@@ -309,16 +266,8 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       },
       pane: NavigationPane(
         selected: _calculateSelectedIndex(context),
-        displayMode: appTheme.displayMode,
-        indicator: () {
-          switch (appTheme.indicator) {
-            case NavigationIndicators.end:
-              return const EndNavigationIndicator();
-            case NavigationIndicators.sticky:
-            default:
-              return const StickyNavigationIndicator();
-          }
-        }(),
+        displayMode: PaneDisplayMode.auto,
+        indicator: const StickyNavigationIndicator(),
         items: originalItems,
         autoSuggestBox: Builder(builder: (context) {
           return AutoSuggestBox(
@@ -328,9 +277,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
             unfocusedColor: Colors.transparent,
             // also need to include sub items from [PaneItemExpander] items
             items: <PaneItem>[
-              ...originalItems
-                  .whereType<PaneItemExpander>()
-                  .expand<PaneItem>((item) {
+              ...originalItems.whereType<PaneItemExpander>().expand<PaneItem>((item) {
                 return [
                   item,
                   ...item.items.whereType<PaneItem>(),

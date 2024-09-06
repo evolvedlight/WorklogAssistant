@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:worklog_assistant/src/database/jira_db_model.dart';
 import 'package:worklog_assistant/src/services/database_helper.dart';
 
@@ -82,3 +83,7 @@ class JiraProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+final jiraProvider = ChangeNotifierProvider<JiraProvider>((ref) {
+  return JiraProvider();
+});

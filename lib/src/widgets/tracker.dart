@@ -1,24 +1,26 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../models/enums/worklogstatus.dart';
+import '../models/jiraapi/issue.dart';
 import '../models/worklogentry.dart';
 import '../providers/jira_provider.dart';
+import '../providers/jiraapi_provider.dart';
 import '../providers/tracking_provider.dart';
 
-class Tracker extends StatefulWidget {
-  const Tracker({super.key});
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+import 'package:hooks_riverpod/hooks_riverpod.dart' as riverpod_hooks;
 
-  @override
-  State<Tracker> createState() => _TrackerPageState();
-}
+class Tracker extends riverpod_hooks.HookConsumerWidget {
+  Tracker({super.key});
 
-class _TrackerPageState extends State<Tracker> {
   final issueController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, riverpod.WidgetRef ref) {
     final theme = FluentTheme.of(context);
+    final trackingProviderRef = ref.watch(trackingProvider);
+    final search = useValueListenable(issueController).text;
 
     return Padding(
         padding: const EdgeInsets.all(16.0),
@@ -35,70 +37,88 @@ class _TrackerPageState extends State<Tracker> {
                 Mica(
                     child: Row(
                   children: [
-                    Expanded(
-                        child: Padding(
+                    Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Align(
                         alignment: AlignmentDirectional.topStart,
                         child: SizedBox(
-                          width: double.infinity,
+                          width: 150,
                           child: TextBox(
                             placeholder: 'Issue Key',
                             expands: false,
                             style: TextStyle(fontSize: 24),
-                            onSubmitted: (value) => changeIssue(value),
+                            onEditingComplete: () => changeIssue(ref),
                             controller: issueController,
                           ),
                         ),
                       ),
-                    )),
-                    Consumer<TrackingProvider>(
-                        builder: (context, trackingContext, child) => Expanded(
-                            child: Text(
-                                formatTime(trackingContext.secondsTimed),
-                                style: TextStyle(fontSize: 24)))),
-                    Consumer<TrackingProvider>(
-                      builder: (context, trackingContext, child) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: trackingContext.state == TrackingState.started
-                            ? Button(
-                                onPressed: stopTracking,
-                                style: ButtonStyle(
-                                  textStyle: WidgetStatePropertyAll(TextStyle(
-                                      color: theme.accentColor, fontSize: 24)),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Text("Stop"),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: ProgressRing(),
-                                      ),
-                                    )
-                                  ],
-                                ))
-                            : Button(
-                                onPressed: startTracking,
-                                style: ButtonStyle(
-                                  textStyle: WidgetStatePropertyAll(TextStyle(
-                                      color: theme.accentColor, fontSize: 24)),
-                                ),
-                                child: Text("Start")),
-                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: riverpod.Consumer(builder: (context, ref, child) {
+                            riverpod.AsyncValue<Issue> issue = ref.watch(
+                              // The provider is now a function expecting the activity type.
+                              // Let's pass a constant string for now, for the sake of simplicity.
+                              issueProvider(search),
+                            );
+
+                            return Container(
+                                child: switch (issue) {
+                              riverpod.AsyncData(:final value) => Text(style: TextStyle(fontSize: 24), textAlign: TextAlign.start, value.summary()),
+                              riverpod.AsyncError() => Text('Issue not found'),
+                              _ => Text("working"),
+                            });
+                          })),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Text(formatTime(trackingProviderRef.secondsTimed), style: TextStyle(fontSize: 24)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: trackingProviderRef.state == TrackingState.started
+                          ? Button(
+                              onPressed: () => stopTracking(ref),
+                              style: ButtonStyle(
+                                textStyle: WidgetStatePropertyAll(TextStyle(color: theme.accentColor, fontSize: 24)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text("Stop"),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: ProgressRing(),
+                                    ),
+                                  )
+                                ],
+                              ))
+                          : Button(
+                              onPressed: () => startTracking(ref),
+                              style: ButtonStyle(
+                                textStyle: WidgetStatePropertyAll(TextStyle(color: theme.accentColor, fontSize: 24)),
+                              ),
+                              child: Text("Start")),
                     )
                   ],
                 )),
-              ]), // first the header - this will be a table layout with a first row that has a checkbox, then the id, the name and the time spent
+              ]),
             )));
   }
 
-  changeIssue(String value) {
-    Provider.of<TrackingProvider>(context, listen: false).currentIssue = value;
-    Provider.of<TrackingProvider>(context, listen: false).startTime();
-    print(value);
+  changeIssue(riverpod.WidgetRef ref) {
+    print('Changing issue');
+    var newIssue = issueController.text;
+    final tracking = ref.watch(trackingProvider);
+    tracking.currentIssue = newIssue;
+
+    final jira = ref.read(jiraProvider);
+    jira.add(WorklogEntry(newIssue, Duration(seconds: tracking.secondsTimed), WorklogStatus.pending));
+
+    tracking.resetTime();
   }
 
   String formatTime(int seconds) {
@@ -108,27 +128,21 @@ class _TrackerPageState extends State<Tracker> {
     return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}";
   }
 
-  void stopTracking() {
-    var trackingModel = Provider.of<TrackingProvider>(context, listen: false);
-    trackingModel.stopTime();
-    var currentTime = trackingModel.secondsTimed;
-    var jiraModel = Provider.of<JiraProvider>(context, listen: false);
-    var currentIssue = trackingModel.currentIssue;
-    jiraModel.add(WorklogEntry(
-        currentIssue, Duration(seconds: currentTime), WorklogStatus.pending));
-    trackingModel.resetTime();
+  void stopTracking(riverpod.WidgetRef ref) {
+    final tracking = ref.watch(trackingProvider);
+    tracking.stopTime();
+    var currentTime = tracking.secondsTimed;
+
+    final jira = ref.read(jiraProvider);
+    var currentIssue = tracking.currentIssue;
+    jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), WorklogStatus.pending));
+
+    tracking.resetTime();
   }
 
-  void startTracking() {
-    var trackingModel = Provider.of<TrackingProvider>(context, listen: false);
-    trackingModel.currentIssue = issueController.text;
-    trackingModel.startTime();
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    issueController.dispose();
-    super.dispose();
+  void startTracking(riverpod.WidgetRef ref) {
+    final tracking = ref.watch(trackingProvider);
+    tracking.currentIssue = issueController.text;
+    tracking.startTime();
   }
 }
