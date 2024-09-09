@@ -15,9 +15,10 @@ class SettingsView extends riverpod.ConsumerWidget {
 
   @override
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
-    var settings = ref.watch(settingsProvider);
-    jiraUrlController.text = settings.jiraUrl;
-    patController.text = settings.jiraPat;
+    var jiraUrl = ref.watch(jiraUrlProvider);
+    var jiraPat = ref.watch(jiraPatProvider);
+    jiraUrlController.text = jiraUrl ?? "";
+    patController.text = jiraPat ?? "";
 
     return ScaffoldPage.scrollable(header: const PageHeader(title: Text('Settings')), children: [
       Padding(
@@ -159,9 +160,7 @@ class SettingsView extends riverpod.ConsumerWidget {
   }
 
   saveSettings(riverpod.WidgetRef ref) {
-    var settings = ref.watch(settingsProvider.notifier);
-
-    settings.updateJiraUrl(jiraUrlController.text);
-    settings.updateJiraPat(patController.text);
+    ref.read(jiraUrlProvider.notifier).set(jiraUrlController.text);
+    ref.read(jiraPatProvider.notifier).set(patController.text);
   }
 }

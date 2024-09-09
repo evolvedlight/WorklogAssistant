@@ -1,47 +1,50 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:worklog_assistant/src/storage/prefs.dart';
 
-class SettingsProvider with ChangeNotifier {
-  String _jiraUrl = "";
-  String get jiraUrl => _jiraUrl;
+part 'settings_provider.g.dart';
 
-  SettingsProvider() {
-    loadSettings();
+@riverpod
+class JiraUrl extends _$JiraUrl {
+  @override
+  String? build() {
+    final prefs = ref.watch(prefsProvider).requireValue;
+
+    // Load the saved theme mode setting from shared preferences.
+    final jiraUrl = prefs.getString('jiraUrl');
+
+    // Return [ThemeMode] based on the saved setting, or [ThemeMode.system]
+    // if there's no saved setting yet.
+    return jiraUrl;
   }
 
-  Future loadSettings() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  void set(String jiraUrl) {
+    final prefs = ref.read(prefsProvider).requireValue;
 
-    _jiraUrl = prefs.getString("jiraUrl") ?? "";
-    _jiraPat = prefs.getString("jiraPat") ?? "";
-    notifyListeners();
-  }
+    prefs.setString('jiraUrl', jiraUrl);
 
-  updateJiraUrl(String url) async {
-    _jiraUrl = url;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    prefs.setString("jiraUrl", url);
-
-    notifyListeners();
-  }
-
-  String _jiraPat = "";
-  String get jiraPat => _jiraPat;
-
-  updateJiraPat(String pat) async {
-    _jiraPat = pat;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    prefs.setString("jiraPat", pat);
-
-    notifyListeners();
+    ref.invalidateSelf();
   }
 }
 
-final settingsProvider = ChangeNotifierProvider<SettingsProvider>((ref) {
-  var s = SettingsProvider();
-  s.loadSettings();
-  return s;
-});
+@riverpod
+class JiraPat extends _$JiraPat {
+  @override
+  String? build() {
+    final prefs = ref.watch(prefsProvider).requireValue;
+
+    // Load the saved theme mode setting from shared preferences.
+    final jiraPat = prefs.getString('jiraPat');
+
+    // Return [ThemeMode] based on the saved setting, or [ThemeMode.system]
+    // if there's no saved setting yet.
+    return jiraPat;
+  }
+
+  void set(String jiraPat) {
+    final prefs = ref.read(prefsProvider).requireValue;
+
+    prefs.setString('jiraPat', jiraPat);
+
+    ref.invalidateSelf();
+  }
+}

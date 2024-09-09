@@ -13,12 +13,13 @@ Future<Issue> issue(IssueRef ref, String jiraId) async {
   // Using package:http, we fetch a random activity from the Bored API.
   print('Fetching issue $jiraId');
 
-  var settings = ref.watch(settingsProvider);
-  var url = '${settings.jiraUrl}/rest/api/2/issue/$jiraId';
+  var jiraUrl = ref.watch(jiraUrlProvider);
+  var jiraPat = ref.watch(jiraPatProvider);
+  var url = '$jiraUrl/rest/api/2/issue/$jiraId';
   final response = await http.get(
     Uri.parse(url),
     headers: {
-      'Authorization': 'Bearer ${settings.jiraPat}',
+      'Authorization': 'Bearer $jiraPat',
       'Content-Type': 'application/json',
     },
   );

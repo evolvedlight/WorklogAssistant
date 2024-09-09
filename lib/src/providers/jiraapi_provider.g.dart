@@ -6,7 +6,7 @@ part of 'jiraapi_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$issueHash() => r'2c7e8bda5dc0c11f287ba06cb7614f674f59474b';
+String _$issueHash() => r'e4d5047c4b063fa082c29def02f9dee7f222d37e';
 
 /// Copied from Dart SDK
 class _SystemHash {

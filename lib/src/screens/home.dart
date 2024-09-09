@@ -31,14 +31,13 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
     assert(debugCheckHasFluentTheme(context));
 
     final jiraProviderRef = ref.watch(jiraProvider);
-    final settingsProviderRef = ref.watch(settingsProvider);
 
     return ScaffoldPage(
         header: PageHeader(
           title: const Text('Worklog Assistant'),
           commandBar: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             FilledButton(
-              onPressed: () => uploadWorklogs(jiraProviderRef, settingsProviderRef),
+              onPressed: () => uploadWorklogs(ref, jiraProviderRef),
               child: Row(
                 children: [
                   Icon(FluentIcons.cloud_upload),
@@ -59,16 +58,18 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
         );
   }
 
-  uploadWorklogs(JiraProvider jiraModel, SettingsProvider settings) async {
+  uploadWorklogs(riverpod.WidgetRef ref, JiraProvider jiraModel) async {
     Future<http.Response> submitWorklogs(String jiraId, Duration timeLogged, DateTime startTime) {
-      var url = '${settings.jiraUrl}/rest/api/2/issue/$jiraId/worklog?adjustEstimate=leave';
+      var jiraUrl = ref.watch(jiraUrlProvider);
+      var jiraPat = ref.watch(jiraPatProvider);
+      var url = '$jiraUrl/rest/api/2/issue/$jiraId/worklog?adjustEstimate=leave';
 
       var body = jsonEncode({"started": formatForJiraTime(startTime), "timeSpentSeconds": max(timeLogged.inSeconds, 60)});
 
       print(body);
       return http.post(Uri.parse(url),
           headers: {
-            'Authorization': 'Bearer ${settings.jiraPat}',
+            'Authorization': 'Bearer $jiraPat',
             'Content-Type': 'application/json',
           },
           body: body);
