@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart' as http;
+import 'package:worklog_assistant/src/services/database_helper.dart';
 import '../providers/settings_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
@@ -79,6 +80,9 @@ class SettingsView extends riverpod.ConsumerWidget {
                 ],
               ),
             ),
+            Padding(padding: const EdgeInsets.only(top: 8.0), child: Divider()),
+            Text("Debug Information:"),
+            Padding(padding: const EdgeInsets.all(8.0), child: Text("DB Path: ${DatabaseHelper.getDbPath()}"))
           ],
         ),
       )

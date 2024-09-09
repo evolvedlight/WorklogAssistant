@@ -9,30 +9,29 @@ class DatabaseHelper {
 
   static const String _jiraTable = "jira";
 
+  static String dbPath = "";
+
   static Future<Database> _getDB() async {
-    print("DB Path: ${join(await getDatabasesPath(), _databaseName)}");
+    dbPath = join(await getDatabasesPath(), _databaseName);
+
+    print("DB Path: $dbPath");
+
     return openDatabase(
-      join(await getDatabasesPath(), _databaseName),
-      onCreate: (db, version) => {
-        db.execute(
-            "CREATE TABLE $_jiraTable(id INTEGER PRIMARY KEY, jiraId TEXT, timeSpent INTEGER, startTime DATETIME, worklogStatus int);")
-      },
+      dbPath,
+      onCreate: (db, version) =>
+          {db.execute("CREATE TABLE $_jiraTable(id INTEGER PRIMARY KEY, jiraId TEXT, timeSpent INTEGER, startTime DATETIME, worklogStatus int);")},
       version: _databaseVersion,
     );
   }
 
   static Future<int> insertJira(JiraDbModel jira) async {
     final db = await _getDB();
-    return await db.insert(_jiraTable, jira.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(_jiraTable, jira.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   static Future<int> updateJira(JiraDbModel jira) async {
     final db = await _getDB();
-    return await db.update(_jiraTable, jira.toJson(),
-        where: 'id = ?',
-        whereArgs: [jira.id],
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.update(_jiraTable, jira.toJson(), where: 'id = ?', whereArgs: [jira.id], conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   static Future<int> deleteJira(int id) async {
@@ -51,5 +50,9 @@ class DatabaseHelper {
   static void deleteAllJiras() async {
     final db = await _getDB();
     db.execute("DELETE FROM $_jiraTable");
+  }
+
+  static String getDbPath() {
+    return dbPath;
   }
 }

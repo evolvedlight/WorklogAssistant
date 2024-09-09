@@ -48,6 +48,7 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
                             expands: false,
                             style: TextStyle(fontSize: 24),
                             onEditingComplete: () => changeIssue(ref),
+                            onSubmitted: (value) => onTrackerSubmitted(value, ref),
                             controller: issueController,
                           ),
                         ),
@@ -111,14 +112,14 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
 
   changeIssue(riverpod.WidgetRef ref) {
     print('Changing issue');
-    var newIssue = issueController.text;
-    final tracking = ref.watch(trackingProvider);
-    tracking.currentIssue = newIssue;
+    // var newIssue = issueController.text;
+    // final tracking = ref.watch(trackingProvider);
+    // tracking.currentIssue = newIssue;
 
-    final jira = ref.read(jiraProvider);
-    jira.add(WorklogEntry(newIssue, Duration(seconds: tracking.secondsTimed), WorklogStatus.pending));
+    // final jira = ref.read(jiraProvider);
+    // jira.add(WorklogEntry(newIssue, Duration(seconds: tracking.secondsTimed), WorklogStatus.pending));
 
-    tracking.resetTime();
+    // tracking.resetTime();
   }
 
   String formatTime(int seconds) {
@@ -143,6 +144,18 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
   void startTracking(riverpod.WidgetRef ref) {
     final tracking = ref.watch(trackingProvider);
     tracking.currentIssue = issueController.text;
+
+    print("Starting work on ${tracking.currentIssue} from button");
+
+    tracking.startTime();
+  }
+
+  onTrackerSubmitted(String value, riverpod.WidgetRef ref) {
+    print("Starting work on $value");
+    // at this point we want to take it and just start logging
+    final tracking = ref.watch(trackingProvider);
+    tracking.currentIssue = value;
+
     tracking.startTime();
   }
 }
