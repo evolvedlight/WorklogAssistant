@@ -325,6 +325,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_use:
+    dependency: "direct main"
+    description:
+      name: flutter_use
+      sha256: "32b9741385157c2e30887cf602a9b3b7f0144946101d422a394a356bce2e69e5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   flutter_web_plugins:
     dependency: transitive
     description: flutter

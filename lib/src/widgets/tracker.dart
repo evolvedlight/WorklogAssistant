@@ -2,25 +2,38 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../models/enums/worklogstatus.dart';
-import '../models/jiraapi/issue.dart';
 import '../models/worklogentry.dart';
 import '../providers/jira_provider.dart';
 import '../providers/jiraapi_provider.dart';
 import '../providers/tracking_provider.dart';
 
+import 'package:flutter_use/flutter_use.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:hooks_riverpod/hooks_riverpod.dart' as riverpod_hooks;
 
 class Tracker extends riverpod_hooks.HookConsumerWidget {
   Tracker({super.key});
 
-  final issueController = TextEditingController();
+  void useDebounce(VoidCallback fn, Duration delay, [List<Object?>? keys]) {
+    final timeout = useTimeoutFn(fn, delay);
+    useEffect(() => timeout.reset, keys);
+  }
 
   @override
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
     final theme = FluentTheme.of(context);
     final trackingProviderRef = ref.watch(trackingProvider);
-    final search = useValueListenable(issueController).text;
+
+    final issueController = useListenable(useTextEditingController());
+    final search = useState('');
+
+    final issue = ref.watch(issueProvider(search.value));
+
+    useDebounce(
+      () => search.value = issueController.text,
+      const Duration(milliseconds: 500),
+      [issueController.text],
+    );
 
     return Padding(
         padding: const EdgeInsets.all(16.0),
@@ -58,12 +71,6 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
                       child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: riverpod.Consumer(builder: (context, ref, child) {
-                            riverpod.AsyncValue<Issue> issue = ref.watch(
-                              // The provider is now a function expecting the activity type.
-                              // Let's pass a constant string for now, for the sake of simplicity.
-                              issueProvider(search),
-                            );
-
                             return Container(
                                 child: switch (issue) {
                               riverpod.AsyncData(:final value) => Text(style: TextStyle(fontSize: 24), textAlign: TextAlign.start, value.summary()),
@@ -98,7 +105,7 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
                                 ],
                               ))
                           : Button(
-                              onPressed: () => startTracking(ref),
+                              onPressed: () => startTracking(ref, issueController.text),
                               style: ButtonStyle(
                                 textStyle: WidgetStatePropertyAll(TextStyle(color: theme.accentColor, fontSize: 24)),
                               ),
@@ -141,9 +148,9 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
     tracking.resetTime();
   }
 
-  void startTracking(riverpod.WidgetRef ref) {
+  void startTracking(riverpod.WidgetRef ref, String text) {
     final tracking = ref.watch(trackingProvider);
-    tracking.currentIssue = issueController.text;
+    tracking.currentIssue = text;
 
     print("Starting work on ${tracking.currentIssue} from button");
 

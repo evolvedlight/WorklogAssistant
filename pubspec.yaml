@@ -58,6 +58,7 @@ dependencies:
   json_annotation: ^4.9.0
   hooks_riverpod: ^2.5.2
   flutter_hooks: ^0.20.5
+  flutter_use: ^0.0.4
 
 dev_dependencies:
   flutter_test:
