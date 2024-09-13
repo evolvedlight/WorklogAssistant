@@ -1,7 +1,12 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart' as riverpod_hooks;
 import 'package:url_launcher/link.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:worklog_assistant/src/providers/search_text_provider.dart';
+import 'package:worklog_assistant/src/screens/issue_list.dart';
+import 'package:worklog_assistant/src/widgets/search.dart';
 import 'screens/home.dart';
 import 'screens/settings.dart';
 import 'package:worklog_assistant/src/providers/settings.dart';
@@ -12,7 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 const String appTitle = 'Worklog Assistant';
 
-class MyApp extends riverpod.ConsumerWidget {
+class MyApp extends riverpod_hooks.HookConsumerWidget {
   const MyApp({super.key});
 
   @override
@@ -82,13 +87,12 @@ class MyHomePageState extends riverpod.ConsumerState<MyHomePage> with WindowList
       title: const Text('Home'),
       body: const SizedBox.shrink(),
     ),
-    // PaneItemHeader(header: const Text('Issue Tracking')),
-    // PaneItem(
-    //   key: const ValueKey('/tracking'),
-    //   icon: const Icon(FluentIcons.button_control),
-    //   title: const Text('Track Time'),
-    //   body: const SizedBox.shrink(),
-    // ),
+    PaneItem(
+      key: const ValueKey('/issue-list'),
+      icon: const Icon(FluentIcons.home),
+      title: const Text('Issues'),
+      body: const SizedBox.shrink(),
+    ),
   ].map<NavigationPaneItem>((e) {
     PaneItem buildPaneItem(PaneItem item) {
       return PaneItem(
@@ -133,6 +137,15 @@ class MyHomePageState extends riverpod.ConsumerState<MyHomePage> with WindowList
         }
       },
     ),
+    PaneItem(
+      key: const ValueKey('/hacky'),
+      icon: const Icon(FluentIcons.settings),
+      title: const Text('Hack'),
+      body: const SizedBox.shrink(),
+      onTap: () {
+        searchFocusNode.requestFocus();
+      },
+    ),
     _LinkPaneItemAction(
       icon: const Icon(FluentIcons.open_source),
       title: const Text('Source code'),
@@ -174,15 +187,28 @@ class MyHomePageState extends riverpod.ConsumerState<MyHomePage> with WindowList
   Widget build(BuildContext context) {
     final localizations = FluentLocalizations.of(context);
 
-    // final appThemeMode = ref.watch(appThemeModeProvider);
-    // final appThemeRef = ref.watch(appTheme);
-    //final themeMode = ref.watch(currentThemeModeProvider);
-
     if (widget.shellContext != null) {
       if (router.canPop() == false) {
         setState(() {});
       }
     }
+
+    ref.listen(
+      searchTextProvider,
+      (String? previous, String value) {
+        print('searchTextProvider: $previous, $value');
+        var currentRoute = router.routeInformationProvider.value;
+        if (currentRoute.uri.path != '/issue-list') {
+          router.go('/issue-list');
+          setState(() {});
+          Future.delayed(const Duration(milliseconds: 10), () {
+            searchFocusNode.requestFocus();
+          });
+        }
+      },
+      onError: (error, stackTrace) => print(error),
+    );
+
     return NavigationView(
       key: viewKey,
       appBar: NavigationAppBar(
@@ -270,51 +296,7 @@ class MyHomePageState extends riverpod.ConsumerState<MyHomePage> with WindowList
         indicator: const StickyNavigationIndicator(),
         items: originalItems,
         autoSuggestBox: Builder(builder: (context) {
-          return AutoSuggestBox(
-            key: searchKey,
-            focusNode: searchFocusNode,
-            controller: searchController,
-            unfocusedColor: Colors.transparent,
-            // also need to include sub items from [PaneItemExpander] items
-            items: <PaneItem>[
-              ...originalItems.whereType<PaneItemExpander>().expand<PaneItem>((item) {
-                return [
-                  item,
-                  ...item.items.whereType<PaneItem>(),
-                ];
-              }),
-              ...originalItems
-                  .where(
-                    (item) => item is PaneItem && item is! PaneItemExpander,
-                  )
-                  .cast<PaneItem>(),
-            ].map((item) {
-              assert(item.title is Text);
-              final text = (item.title as Text).data!;
-              return AutoSuggestBoxItem(
-                label: text,
-                value: text,
-                onSelected: () {
-                  item.onTap?.call();
-                  searchController.clear();
-                  searchFocusNode.unfocus();
-                  final view = NavigationView.of(context);
-                  if (view.compactOverlayOpen) {
-                    view.compactOverlayOpen = false;
-                  } else if (view.minimalPaneOpen) {
-                    view.minimalPaneOpen = false;
-                  }
-                },
-              );
-            }).toList(),
-            trailingIcon: IgnorePointer(
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(FluentIcons.search),
-              ),
-            ),
-            placeholder: 'Search for issue',
-          );
+          return SearchWidget(searchFocusNode);
         }),
         autoSuggestBoxReplacement: const Icon(FluentIcons.search),
         footerItems: footerItems,
@@ -425,6 +407,7 @@ final router = GoRouter(navigatorKey: rootNavigatorKey, routes: [
     routes: <GoRoute>[
       GoRoute(path: '/', builder: (context, state) => const HomePage()),
       GoRoute(path: '/settings', builder: (context, state) => SettingsView()),
+      GoRoute(path: '/issue-list', builder: (context, state) => IssueListScreen()),
       // GoRoute(
       //     path: '/tracking', builder: (context, state) => const TrackingPage()),
     ],

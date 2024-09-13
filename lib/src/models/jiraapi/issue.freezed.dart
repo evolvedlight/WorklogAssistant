@@ -208,3 +208,566 @@ abstract class _Issue extends Issue {
   _$$IssueImplCopyWith<_$IssueImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+IssuePickerResult _$IssuePickerResultFromJson(Map<String, dynamic> json) {
+  return _IssuePickerResult.fromJson(json);
+}
+
+/// @nodoc
+mixin _$IssuePickerResult {
+  List<IssueSection> get sections => throw _privateConstructorUsedError;
+
+  /// Serializes this IssuePickerResult to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of IssuePickerResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $IssuePickerResultCopyWith<IssuePickerResult> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $IssuePickerResultCopyWith<$Res> {
+  factory $IssuePickerResultCopyWith(
+          IssuePickerResult value, $Res Function(IssuePickerResult) then) =
+      _$IssuePickerResultCopyWithImpl<$Res, IssuePickerResult>;
+  @useResult
+  $Res call({List<IssueSection> sections});
+}
+
+/// @nodoc
+class _$IssuePickerResultCopyWithImpl<$Res, $Val extends IssuePickerResult>
+    implements $IssuePickerResultCopyWith<$Res> {
+  _$IssuePickerResultCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of IssuePickerResult
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? sections = null,
+  }) {
+    return _then(_value.copyWith(
+      sections: null == sections
+          ? _value.sections
+          : sections // ignore: cast_nullable_to_non_nullable
+              as List<IssueSection>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$IssuePickerResultImplCopyWith<$Res>
+    implements $IssuePickerResultCopyWith<$Res> {
+  factory _$$IssuePickerResultImplCopyWith(_$IssuePickerResultImpl value,
+          $Res Function(_$IssuePickerResultImpl) then) =
+      __$$IssuePickerResultImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({List<IssueSection> sections});
+}
+
+/// @nodoc
+class __$$IssuePickerResultImplCopyWithImpl<$Res>
+    extends _$IssuePickerResultCopyWithImpl<$Res, _$IssuePickerResultImpl>
+    implements _$$IssuePickerResultImplCopyWith<$Res> {
+  __$$IssuePickerResultImplCopyWithImpl(_$IssuePickerResultImpl _value,
+      $Res Function(_$IssuePickerResultImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of IssuePickerResult
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? sections = null,
+  }) {
+    return _then(_$IssuePickerResultImpl(
+      sections: null == sections
+          ? _value._sections
+          : sections // ignore: cast_nullable_to_non_nullable
+              as List<IssueSection>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$IssuePickerResultImpl extends _IssuePickerResult {
+  _$IssuePickerResultImpl({required final List<IssueSection> sections})
+      : _sections = sections,
+        super._();
+
+  factory _$IssuePickerResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$IssuePickerResultImplFromJson(json);
+
+  final List<IssueSection> _sections;
+  @override
+  List<IssueSection> get sections {
+    if (_sections is EqualUnmodifiableListView) return _sections;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_sections);
+  }
+
+  @override
+  String toString() {
+    return 'IssuePickerResult(sections: $sections)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$IssuePickerResultImpl &&
+            const DeepCollectionEquality().equals(other._sections, _sections));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_sections));
+
+  /// Create a copy of IssuePickerResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$IssuePickerResultImplCopyWith<_$IssuePickerResultImpl> get copyWith =>
+      __$$IssuePickerResultImplCopyWithImpl<_$IssuePickerResultImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$IssuePickerResultImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _IssuePickerResult extends IssuePickerResult {
+  factory _IssuePickerResult({required final List<IssueSection> sections}) =
+      _$IssuePickerResultImpl;
+  _IssuePickerResult._() : super._();
+
+  factory _IssuePickerResult.fromJson(Map<String, dynamic> json) =
+      _$IssuePickerResultImpl.fromJson;
+
+  @override
+  List<IssueSection> get sections;
+
+  /// Create a copy of IssuePickerResult
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$IssuePickerResultImplCopyWith<_$IssuePickerResultImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+IssueSection _$IssueSectionFromJson(Map<String, dynamic> json) {
+  return _IssueSection.fromJson(json);
+}
+
+/// @nodoc
+mixin _$IssueSection {
+  String? get label => throw _privateConstructorUsedError;
+  String? get msg => throw _privateConstructorUsedError;
+  List<IssuePicker> get issues => throw _privateConstructorUsedError;
+
+  /// Serializes this IssueSection to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of IssueSection
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $IssueSectionCopyWith<IssueSection> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $IssueSectionCopyWith<$Res> {
+  factory $IssueSectionCopyWith(
+          IssueSection value, $Res Function(IssueSection) then) =
+      _$IssueSectionCopyWithImpl<$Res, IssueSection>;
+  @useResult
+  $Res call({String? label, String? msg, List<IssuePicker> issues});
+}
+
+/// @nodoc
+class _$IssueSectionCopyWithImpl<$Res, $Val extends IssueSection>
+    implements $IssueSectionCopyWith<$Res> {
+  _$IssueSectionCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of IssueSection
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? label = freezed,
+    Object? msg = freezed,
+    Object? issues = null,
+  }) {
+    return _then(_value.copyWith(
+      label: freezed == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String?,
+      msg: freezed == msg
+          ? _value.msg
+          : msg // ignore: cast_nullable_to_non_nullable
+              as String?,
+      issues: null == issues
+          ? _value.issues
+          : issues // ignore: cast_nullable_to_non_nullable
+              as List<IssuePicker>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$IssueSectionImplCopyWith<$Res>
+    implements $IssueSectionCopyWith<$Res> {
+  factory _$$IssueSectionImplCopyWith(
+          _$IssueSectionImpl value, $Res Function(_$IssueSectionImpl) then) =
+      __$$IssueSectionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? label, String? msg, List<IssuePicker> issues});
+}
+
+/// @nodoc
+class __$$IssueSectionImplCopyWithImpl<$Res>
+    extends _$IssueSectionCopyWithImpl<$Res, _$IssueSectionImpl>
+    implements _$$IssueSectionImplCopyWith<$Res> {
+  __$$IssueSectionImplCopyWithImpl(
+      _$IssueSectionImpl _value, $Res Function(_$IssueSectionImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of IssueSection
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? label = freezed,
+    Object? msg = freezed,
+    Object? issues = null,
+  }) {
+    return _then(_$IssueSectionImpl(
+      label: freezed == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String?,
+      msg: freezed == msg
+          ? _value.msg
+          : msg // ignore: cast_nullable_to_non_nullable
+              as String?,
+      issues: null == issues
+          ? _value._issues
+          : issues // ignore: cast_nullable_to_non_nullable
+              as List<IssuePicker>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$IssueSectionImpl extends _IssueSection {
+  _$IssueSectionImpl(
+      {this.label, this.msg, required final List<IssuePicker> issues})
+      : _issues = issues,
+        super._();
+
+  factory _$IssueSectionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$IssueSectionImplFromJson(json);
+
+  @override
+  final String? label;
+  @override
+  final String? msg;
+  final List<IssuePicker> _issues;
+  @override
+  List<IssuePicker> get issues {
+    if (_issues is EqualUnmodifiableListView) return _issues;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_issues);
+  }
+
+  @override
+  String toString() {
+    return 'IssueSection(label: $label, msg: $msg, issues: $issues)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$IssueSectionImpl &&
+            (identical(other.label, label) || other.label == label) &&
+            (identical(other.msg, msg) || other.msg == msg) &&
+            const DeepCollectionEquality().equals(other._issues, _issues));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, label, msg, const DeepCollectionEquality().hash(_issues));
+
+  /// Create a copy of IssueSection
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$IssueSectionImplCopyWith<_$IssueSectionImpl> get copyWith =>
+      __$$IssueSectionImplCopyWithImpl<_$IssueSectionImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$IssueSectionImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _IssueSection extends IssueSection {
+  factory _IssueSection(
+      {final String? label,
+      final String? msg,
+      required final List<IssuePicker> issues}) = _$IssueSectionImpl;
+  _IssueSection._() : super._();
+
+  factory _IssueSection.fromJson(Map<String, dynamic> json) =
+      _$IssueSectionImpl.fromJson;
+
+  @override
+  String? get label;
+  @override
+  String? get msg;
+  @override
+  List<IssuePicker> get issues;
+
+  /// Create a copy of IssueSection
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$IssueSectionImplCopyWith<_$IssueSectionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+IssuePicker _$IssuePickerFromJson(Map<String, dynamic> json) {
+  return _IssuePicker.fromJson(json);
+}
+
+/// @nodoc
+mixin _$IssuePicker {
+  String get key => throw _privateConstructorUsedError;
+  String get keyHtml => throw _privateConstructorUsedError;
+  String? get summary => throw _privateConstructorUsedError;
+  String? get summaryText => throw _privateConstructorUsedError;
+
+  /// Serializes this IssuePicker to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of IssuePicker
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $IssuePickerCopyWith<IssuePicker> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $IssuePickerCopyWith<$Res> {
+  factory $IssuePickerCopyWith(
+          IssuePicker value, $Res Function(IssuePicker) then) =
+      _$IssuePickerCopyWithImpl<$Res, IssuePicker>;
+  @useResult
+  $Res call({String key, String keyHtml, String? summary, String? summaryText});
+}
+
+/// @nodoc
+class _$IssuePickerCopyWithImpl<$Res, $Val extends IssuePicker>
+    implements $IssuePickerCopyWith<$Res> {
+  _$IssuePickerCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of IssuePicker
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? key = null,
+    Object? keyHtml = null,
+    Object? summary = freezed,
+    Object? summaryText = freezed,
+  }) {
+    return _then(_value.copyWith(
+      key: null == key
+          ? _value.key
+          : key // ignore: cast_nullable_to_non_nullable
+              as String,
+      keyHtml: null == keyHtml
+          ? _value.keyHtml
+          : keyHtml // ignore: cast_nullable_to_non_nullable
+              as String,
+      summary: freezed == summary
+          ? _value.summary
+          : summary // ignore: cast_nullable_to_non_nullable
+              as String?,
+      summaryText: freezed == summaryText
+          ? _value.summaryText
+          : summaryText // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$IssuePickerImplCopyWith<$Res>
+    implements $IssuePickerCopyWith<$Res> {
+  factory _$$IssuePickerImplCopyWith(
+          _$IssuePickerImpl value, $Res Function(_$IssuePickerImpl) then) =
+      __$$IssuePickerImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String key, String keyHtml, String? summary, String? summaryText});
+}
+
+/// @nodoc
+class __$$IssuePickerImplCopyWithImpl<$Res>
+    extends _$IssuePickerCopyWithImpl<$Res, _$IssuePickerImpl>
+    implements _$$IssuePickerImplCopyWith<$Res> {
+  __$$IssuePickerImplCopyWithImpl(
+      _$IssuePickerImpl _value, $Res Function(_$IssuePickerImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of IssuePicker
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? key = null,
+    Object? keyHtml = null,
+    Object? summary = freezed,
+    Object? summaryText = freezed,
+  }) {
+    return _then(_$IssuePickerImpl(
+      key: null == key
+          ? _value.key
+          : key // ignore: cast_nullable_to_non_nullable
+              as String,
+      keyHtml: null == keyHtml
+          ? _value.keyHtml
+          : keyHtml // ignore: cast_nullable_to_non_nullable
+              as String,
+      summary: freezed == summary
+          ? _value.summary
+          : summary // ignore: cast_nullable_to_non_nullable
+              as String?,
+      summaryText: freezed == summaryText
+          ? _value.summaryText
+          : summaryText // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$IssuePickerImpl extends _IssuePicker {
+  _$IssuePickerImpl(
+      {required this.key,
+      required this.keyHtml,
+      this.summary,
+      this.summaryText})
+      : super._();
+
+  factory _$IssuePickerImpl.fromJson(Map<String, dynamic> json) =>
+      _$$IssuePickerImplFromJson(json);
+
+  @override
+  final String key;
+  @override
+  final String keyHtml;
+  @override
+  final String? summary;
+  @override
+  final String? summaryText;
+
+  @override
+  String toString() {
+    return 'IssuePicker(key: $key, keyHtml: $keyHtml, summary: $summary, summaryText: $summaryText)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$IssuePickerImpl &&
+            (identical(other.key, key) || other.key == key) &&
+            (identical(other.keyHtml, keyHtml) || other.keyHtml == keyHtml) &&
+            (identical(other.summary, summary) || other.summary == summary) &&
+            (identical(other.summaryText, summaryText) ||
+                other.summaryText == summaryText));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, key, keyHtml, summary, summaryText);
+
+  /// Create a copy of IssuePicker
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$IssuePickerImplCopyWith<_$IssuePickerImpl> get copyWith =>
+      __$$IssuePickerImplCopyWithImpl<_$IssuePickerImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$IssuePickerImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _IssuePicker extends IssuePicker {
+  factory _IssuePicker(
+      {required final String key,
+      required final String keyHtml,
+      final String? summary,
+      final String? summaryText}) = _$IssuePickerImpl;
+  _IssuePicker._() : super._();
+
+  factory _IssuePicker.fromJson(Map<String, dynamic> json) =
+      _$IssuePickerImpl.fromJson;
+
+  @override
+  String get key;
+  @override
+  String get keyHtml;
+  @override
+  String? get summary;
+  @override
+  String? get summaryText;
+
+  /// Create a copy of IssuePicker
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$IssuePickerImplCopyWith<_$IssuePickerImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

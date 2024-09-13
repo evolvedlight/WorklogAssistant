@@ -73,7 +73,7 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
                           child: riverpod.Consumer(builder: (context, ref, child) {
                             return Container(
                                 child: switch (issue) {
-                              riverpod.AsyncData(:final value) => Text(style: TextStyle(fontSize: 24), textAlign: TextAlign.start, value.summary()),
+                              riverpod.AsyncData(:final value) => Text(style: TextStyle(fontSize: 24), textAlign: TextAlign.start, value?.summary ?? ''),
                               riverpod.AsyncError() => Text('Issue not found'),
                               _ => Text('loading..')
                             });
