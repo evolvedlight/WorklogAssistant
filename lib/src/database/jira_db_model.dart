@@ -26,12 +26,13 @@ class JiraDbModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    var jsn = {
       'id': id,
       'jiraId': jiraId,
       'timeSpent': timeSpent.inSeconds,
       'startTime': startTime.toIso8601String(),
       'worklogStatus': worklogStatus.index,
     };
+    return jsn;
   }
 }

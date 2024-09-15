@@ -69,7 +69,8 @@ class JiraProvider extends ChangeNotifier {
     entry.jiraId = item.jiraId;
     entry.startTime = item.startTime;
     entry.timeLogged = item.timeLogged;
-    DatabaseHelper.updateJira(JiraDbModel(jiraId: item.jiraId, timeSpent: item.timeLogged, startTime: item.startTime, worklogStatus: item.status));
+    DatabaseHelper.updateJira(
+        JiraDbModel(id: item.id!, jiraId: item.jiraId, timeSpent: item.timeLogged, startTime: item.startTime, worklogStatus: item.status));
     Future(() => {notifyListeners()});
   }
 

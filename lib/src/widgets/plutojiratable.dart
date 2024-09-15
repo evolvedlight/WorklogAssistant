@@ -52,6 +52,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
         title: 'Status',
         field: 'status',
         type: PlutoColumnType.text(),
+        enableAutoEditing: true,
         formatter: (dynamic value) {
           return convertWorklogToNiceString(value);
         }),
@@ -127,7 +128,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
           },
           onChanged: (PlutoGridOnChangedEvent event) {
             var jira = ref.watch(jiraProvider);
-            var jiraModel = jira.get(int.parse((event.row!.key as ValueKey<String>).value));
+            var jiraModel = jira.get(int.parse((event.row.key as ValueKey<String>).value));
             if (jiraModel == null) {
               return;
             }
@@ -137,7 +138,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
               case 'started_at':
                 jiraModel.startTime = event.value as DateTime;
               case 'working_time':
-                jiraModel.timeLogged = event.value as Duration;
+                jiraModel.timeLogged = TryParseJiraWorklogUpdate(event.value);
             }
             jira.update(jiraModel.id!, jiraModel);
           },
@@ -183,5 +184,25 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
       default:
         return "Unknown";
     }
+  }
+
+  // This function tries to understand things like "1h 30m" and "1h" and "30m" and "1h 30m 15s"
+  Duration TryParseJiraWorklogUpdate(value) {
+    var parts = value.toString().split(" ");
+    var hours = 0;
+    var minutes = 0;
+    var seconds = 0;
+    for (var part in parts) {
+      if (part.contains("h")) {
+        hours = int.parse(part.replaceAll("h", ""));
+      }
+      if (part.contains("m")) {
+        minutes = int.parse(part.replaceAll("m", ""));
+      }
+      if (part.contains("s")) {
+        seconds = int.parse(part.replaceAll("s", ""));
+      }
+    }
+    return Duration(hours: hours, minutes: minutes, seconds: seconds);
   }
 }
