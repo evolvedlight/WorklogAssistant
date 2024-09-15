@@ -1,10 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_use/flutter_use.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:worklog_assistant/src/providers/search_text_provider.dart';
-
-import '../app.dart';
 
 class SearchWidget extends HookConsumerWidget {
   final FocusNode searchFocusNode;

@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/enums/worklogstatus.dart';
 import '../providers/settings_provider.dart';
+import '../widgets/plutojiratable.dart';
 import '../widgets/tracker.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
@@ -50,7 +51,8 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
         ),
         content: Column(
           children: [
-            Expanded(child: material.Material(child: JiraTable())),
+            // Expanded(child: material.Material(child: JiraTable())),
+            Expanded(child: material.Material(child: PlutoJiraTable())),
             Tracker(),
           ],
         )

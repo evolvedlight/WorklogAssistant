@@ -2,9 +2,9 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:worklog_assistant/src/database/jira_db_model.dart';
 import 'package:worklog_assistant/src/services/database_helper.dart';
 
+import '../database/jira_db_model.dart';
 import '../models/enums/worklogstatus.dart';
 import '../models/worklogentry.dart';
 
@@ -24,29 +24,26 @@ class JiraProvider extends ChangeNotifier {
   Future fetchAndSetJiras() async {
     var data = await DatabaseHelper.getJiras();
 
-    _items.addAll(data.map((e) =>
-        WorklogEntry(e.jiraId, e.timeSpent, e.worklogStatus)..id = e.id));
+    _items.addAll(data.map((e) => WorklogEntry(e.jiraId, e.timeSpent, e.worklogStatus)..id = e.id));
     notifyListeners();
   }
 
   /// The sum of all worklogs's time logged
-  double get totalLoggedTime => _items.fold(
-      0.0, (total, current) => total + current.timeLogged.inSeconds);
+  double get totalLoggedTime => _items.fold(0.0, (total, current) => total + current.timeLogged.inSeconds);
 
-  double get totalUnsubmittedTime => _items
-      .where((item) => item.status != WorklogStatus.submitted)
-      .fold(0.0, (total, current) => total + current.timeLogged.inSeconds);
+  double get totalUnsubmittedTime =>
+      _items.where((item) => item.status != WorklogStatus.submitted).fold(0.0, (total, current) => total + current.timeLogged.inSeconds);
 
   /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
   /// cart from the outside.
   void add(WorklogEntry item) async {
-    var id = await DatabaseHelper.insertJira(JiraDbModel(
-        jiraId: item.jiraId,
-        timeSpent: item.timeLogged,
-        startTime: DateTime.now(),
-        worklogStatus: item.status));
+    var id =
+        await DatabaseHelper.insertJira(JiraDbModel(jiraId: item.jiraId, timeSpent: item.timeLogged, startTime: DateTime.now(), worklogStatus: item.status));
     item.id = id;
     _items.add(item);
+
+    print("added item");
+
     // This call tells the widgets that are listening to this model to rebuild.
     notifyListeners();
   }
@@ -54,6 +51,31 @@ class JiraProvider extends ChangeNotifier {
   void deletedSelected() {
     var selected = _items.where((element) => element.selected).toList();
     for (var element in selected) {
+      _items.remove(element);
+      if (element.id != null) {
+        DatabaseHelper.deleteJira(element.id!);
+      }
+    }
+    notifyListeners();
+  }
+
+  WorklogEntry? get(int id) {
+    return _items.firstWhere((element) => element.id == id);
+  }
+
+  void update(int id, WorklogEntry item) {
+    print("updating item");
+    var entry = _items.firstWhere((element) => element.id == id);
+    entry.jiraId = item.jiraId;
+    entry.startTime = item.startTime;
+    entry.timeLogged = item.timeLogged;
+    DatabaseHelper.updateJira(JiraDbModel(jiraId: item.jiraId, timeSpent: item.timeLogged, startTime: item.startTime, worklogStatus: item.status));
+    Future(() => {notifyListeners()});
+  }
+
+  void delete(int id) {
+    var victim = _items.where((element) => element.id == id).toList();
+    for (var element in victim) {
       _items.remove(element);
       if (element.id != null) {
         DatabaseHelper.deleteJira(element.id!);
@@ -73,12 +95,7 @@ class JiraProvider extends ChangeNotifier {
   void markAs(int id, WorklogStatus status) {
     var item = _items.firstWhere((element) => element.id == id);
     item.status = status;
-    DatabaseHelper.updateJira(JiraDbModel(
-        id: item.id,
-        jiraId: item.jiraId,
-        timeSpent: item.timeLogged,
-        startTime: DateTime.now(),
-        worklogStatus: status));
+    DatabaseHelper.updateJira(JiraDbModel(id: item.id, jiraId: item.jiraId, timeSpent: item.timeLogged, startTime: DateTime.now(), worklogStatus: status));
 
     notifyListeners();
   }

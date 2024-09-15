@@ -134,22 +134,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
-  ci:
-    dependency: transitive
-    description:
-      name: ci
-      sha256: "145d095ce05cddac4d797a158bc4cf3b6016d1fe63d8c3d2fbd7212590adca13"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      sha256: c05b7406fdabc7a49a3929d4af76bcaccbbffcbcdcf185b082e1ae07da323d19
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.1"
   clock:
     dependency: transitive
     description:
@@ -198,22 +182,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
-  custom_lint:
-    dependency: "direct dev"
-    description:
-      name: custom_lint
-      sha256: "4939d89e580c36215e48a7de8fd92f22c79dcc3eb11fda84f3402b3b45aec663"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.5"
-  custom_lint_builder:
-    dependency: transitive
-    description:
-      name: custom_lint_builder
-      sha256: d9e5bb63ed52c1d006f5a1828992ba6de124c27a531e8fba0a31afffa81621b3
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.5"
   custom_lint_core:
     dependency: transitive
     description:
@@ -226,10 +194,10 @@ packages:
     dependency: transitive
     description:
       name: dart_style
-      sha256: "99e066ce75c89d6b29903d788a7bb9369cf754f7b24bf70bf4b6d6d6b26853b9"
+      sha256: "7856d364b589d1f08986e140938578ed36ed948581fbc3bc9aef1805039ac5ab"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.6"
+    version: "2.3.7"
   data_table_2:
     dependency: "direct main"
     description:
@@ -394,14 +362,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.2"
-  hotreloader:
-    dependency: transitive
-    description:
-      name: hotreloader
-      sha256: ed56fdc1f3a8ac924e717257621d09e9ec20e308ab6352a73a50a1d7a4d9158e
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.2.0"
   http:
     dependency: "direct main"
     description:
@@ -627,6 +587,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  pluto_grid:
+    dependency: "direct main"
+    description:
+      name: pluto_grid
+      sha256: "1d4cd9d2652742b556aa9b3230cc64672a3f63c34a9acc80fef794ab36ad903b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.0.0"
   pool:
     dependency: transitive
     description:
@@ -691,22 +659,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.3"
-  riverpod_lint:
-    dependency: "direct dev"
-    description:
-      name: riverpod_lint
-      sha256: a35a92f2c2a4b7a5d95671c96c5432b42c20f26bb3e985e83d0b186471b61a85
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.13"
   rxdart:
     dependency: transitive
     description:
       name: rxdart
-      sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
+      sha256: "0c7c0cedd93788d996e33041ffecda924cc54389199cde4e6a34b440f50044cb"
       url: "https://pub.dev"
     source: hosted
-    version: "0.28.0"
+    version: "0.27.7"
   screen_retriever:
     dependency: transitive
     description:
@@ -824,14 +784,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
-  sprintf:
-    dependency: transitive
-    description:
-      name: sprintf
-      sha256: "1fc9ffe69d4df602376b52949af107d8f5703b77cda567c4d7d86a0693120f23"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.0.0"
   sqflite_common:
     dependency: transitive
     description:
@@ -896,22 +848,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  syncfusion_flutter_core:
-    dependency: transitive
-    description:
-      name: syncfusion_flutter_core
-      sha256: "85f96b7b06f32a60b19ab0bb8c32bf162a0474f2d94f4844384be1118e6b4954"
-      url: "https://pub.dev"
-    source: hosted
-    version: "26.2.11"
-  syncfusion_flutter_datagrid:
-    dependency: "direct main"
-    description:
-      name: syncfusion_flutter_datagrid
-      sha256: "81d58ca3620fff294a009ade93697e4fe06b5f5867a77c1dabe772c8238dc25e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "26.2.11"
   synchronized:
     dependency: transitive
     description:
@@ -1032,14 +968,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
-  uuid:
-    dependency: transitive
-    description:
-      name: uuid
-      sha256: f33d6bb662f0e4f79dcd7ada2e6170f3b3a2530c28fc41f49a411ddedd576a77
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.5.0"
   vector_math:
     dependency: transitive
     description:

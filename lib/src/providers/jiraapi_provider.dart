@@ -13,7 +13,6 @@ Future<Issue?> issue(IssueRef ref, String jiraId) async {
   if (jiraId.isEmpty) {
     return null;
   }
-  print('Fetching issue $jiraId');
 
   var jiraUrl = ref.watch(jiraUrlProvider);
   var jiraPat = ref.watch(jiraPatProvider);

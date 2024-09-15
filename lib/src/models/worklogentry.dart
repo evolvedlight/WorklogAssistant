@@ -7,9 +7,9 @@ class WorklogEntry {
     this.status,
   );
 
-  final String jiraId;
-  final Duration timeLogged;
-  final DateTime startTime = DateTime.now().toUtc();
+  String jiraId;
+  Duration timeLogged;
+  DateTime startTime = DateTime.now().toUtc();
   int? id;
   WorklogStatus status;
   bool selected = false;

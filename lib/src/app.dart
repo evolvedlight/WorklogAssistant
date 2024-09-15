@@ -1,6 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart' as riverpod_hooks;
 import 'package:url_launcher/link.dart';
 import 'package:window_manager/window_manager.dart';

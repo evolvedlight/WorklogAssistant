@@ -9,6 +9,8 @@ import '../providers/jira_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
+import 'asyncjirasummarytextwidget.dart';
+
 class JiraTable extends riverpod.ConsumerStatefulWidget {
   const JiraTable({super.key});
 
@@ -255,7 +257,8 @@ class WorklogDataSource extends DataTableSource {
                     print('onSubmited jiraId ${worklogEntry.jiraId} $val');
                   }),
               showEditIcon: true),
-          DataCell(Text(worklogEntry.jiraId)),
+          DataCell(AsyncJiraSummaryTextWidget(worklogEntry.jiraId)),
+          //DataCell(Text(worklogEntry.jiraId)),
           // DataCell(
           //     fluent.NumberBox(
           //         value: worklogEntry.timeLogged,
