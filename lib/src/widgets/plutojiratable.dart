@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -138,7 +135,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
               case 'started_at':
                 jiraModel.startTime = event.value as DateTime;
               case 'working_time':
-                jiraModel.timeLogged = TryParseJiraWorklogUpdate(event.value);
+                jiraModel.timeLogged = tryParseJiraWorklogUpdate(event.value);
             }
             jira.update(jiraModel.id!, jiraModel);
           },
@@ -187,7 +184,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
   }
 
   // This function tries to understand things like "1h 30m" and "1h" and "30m" and "1h 30m 15s"
-  Duration TryParseJiraWorklogUpdate(value) {
+  Duration tryParseJiraWorklogUpdate(value) {
     var parts = value.toString().split(" ");
     var hours = 0;
     var minutes = 0;

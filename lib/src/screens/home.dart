@@ -6,7 +6,6 @@ import 'package:flutter/material.dart' as material;
 import 'package:intl/intl.dart';
 import 'package:worklog_assistant/src/providers/jira_provider.dart';
 import 'package:worklog_assistant/src/widgets/page.dart';
-import 'package:worklog_assistant/src/widgets/jiratable.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/enums/worklogstatus.dart';

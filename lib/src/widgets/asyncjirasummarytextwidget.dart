@@ -18,7 +18,7 @@ class AsyncJiraSummaryTextWidget extends ConsumerWidget {
     final asyncJiraSummary = ref.watch(issueProvider(jiraId));
 
     return asyncJiraSummary.when(
-      data: (summary) => Text("${jiraId}: ${summary?.summary ?? 'No summary found'}"),
+      data: (summary) => Text("$jiraId: ${summary?.summary ?? 'No summary found'}"),
       loading: () => CircularProgressIndicator(),
       error: (error, stack) => Text('Error: $error'),
     );
