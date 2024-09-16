@@ -1,3 +1,4 @@
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:worklog_assistant/src/providers/jiraapi_provider.dart';
@@ -18,9 +19,9 @@ class AsyncJiraSummaryTextWidget extends ConsumerWidget {
     final asyncJiraSummary = ref.watch(issueProvider(jiraId));
 
     return asyncJiraSummary.when(
-      data: (summary) => Text("$jiraId: ${summary?.summary ?? 'No summary found'}"),
-      loading: () => CircularProgressIndicator(),
-      error: (error, stack) => Text('Error: $error'),
+      data: (summary) => Text(summary?.summary == null ? '' : '${summary?.summary}'),
+      loading: () => ProgressRing(),
+      error: (error, stack) => Text(''),
     );
   }
 }

@@ -14,8 +14,6 @@ class DatabaseHelper {
   static Future<Database> _getDB() async {
     dbPath = join(await getDatabasesPath(), _databaseName);
 
-    print("DB Path: $dbPath");
-
     return openDatabase(
       dbPath,
       onCreate: (db, version) =>

@@ -29,6 +29,7 @@ class MyApp extends riverpod_hooks.HookConsumerWidget {
       title: appTitle,
       themeMode: themeMode,
       color: SystemTheme.accentColor.dark,
+      debugShowCheckedModeBanner: false,
       darkTheme: FluentThemeData(
         brightness: Brightness.dark,
         visualDensity: VisualDensity.standard,
@@ -134,15 +135,6 @@ class MyHomePageState extends riverpod.ConsumerState<MyHomePage> with WindowList
         if (GoRouterState.of(context).uri.toString() != '/settings') {
           context.go('/settings');
         }
-      },
-    ),
-    PaneItem(
-      key: const ValueKey('/hacky'),
-      icon: const Icon(FluentIcons.settings),
-      title: const Text('Hack'),
-      body: const SizedBox.shrink(),
-      onTap: () {
-        searchFocusNode.requestFocus();
       },
     ),
     _LinkPaneItemAction(

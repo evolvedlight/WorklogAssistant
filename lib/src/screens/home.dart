@@ -25,6 +25,7 @@ class HomePage extends riverpod.ConsumerStatefulWidget {
 class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
   bool selected = true;
   String? comboboxValue;
+  bool isSubmitting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,15 +38,20 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
           title: const Text('Worklog Assistant'),
           commandBar: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             FilledButton(
-              onPressed: () => uploadWorklogs(ref, jiraProviderRef),
+              onPressed: isSubmitting ? null : () => uploadWorklogs(ref, jiraProviderRef),
               child: Row(
                 children: [
-                  Icon(FluentIcons.cloud_upload),
+                  if (isSubmitting)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: SizedBox(width: 16, height: 16, child: ProgressRing()),
+                    ),
+                  if (!isSubmitting) Icon(FluentIcons.cloud_upload),
                   SizedBox(width: 8.0),
-                  Text("Submit Worklogs (${formatTotalLoggedTime(jiraProviderRef.totalUnsubmittedTime)})")
+                  Text("Submit Worklogs (${formatTotalLoggedTime(jiraProviderRef.totalUnsubmittedTime)})"),
                 ],
               ),
-            )
+            ),
           ]),
         ),
         content: Column(
@@ -76,21 +82,30 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
           body: body);
     }
 
-    for (var worklog in jiraModel.items.where((worklog) => worklog.status != WorklogStatus.submitted)) {
-      if (worklog.id == null) {
-        continue;
-      }
-      jiraModel.markAs(worklog.id!, WorklogStatus.submitting);
-      var result = await submitWorklogs(worklog.jiraId, worklog.timeLogged, worklog.startTime);
+    isSubmitting = true;
+    setState(() {});
 
-      if (result.statusCode != 201) {
-        jiraModel.markAs(worklog.id!, WorklogStatus.error);
-        print('Error submitting worklog: ${result.body}');
-        continue;
-      } else {
-        jiraModel.markAs(worklog.id!, WorklogStatus.submitted);
-        print('Submitted Worklog');
+    try {
+      for (var worklog in jiraModel.items.where((worklog) => worklog.status != WorklogStatus.submitted)) {
+        if (worklog.id == null) {
+          continue;
+        }
+        jiraModel.markAs(worklog.id!, WorklogStatus.submitting);
+        var result = await submitWorklogs(worklog.jiraId, worklog.timeLogged, worklog.startTime);
+
+        if (result.statusCode != 201) {
+          jiraModel.markAs(worklog.id!, WorklogStatus.error);
+          print('Error submitting worklog: ${result.body}');
+          continue;
+        } else {
+          jiraModel.markAs(worklog.id!, WorklogStatus.submitted);
+          print('Submitted Worklog');
+        }
       }
+      setState(() {});
+    } finally {
+      isSubmitting = false;
+      setState(() {});
     }
   }
 

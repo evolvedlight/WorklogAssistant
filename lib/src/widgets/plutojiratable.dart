@@ -39,12 +39,13 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
       formatter: (value) => DateFormat('yyyy-MM-dd HH:mm:ss').format(value),
     ),
     PlutoColumn(
-        title: 'Working time',
-        field: 'working_time',
-        type: PlutoColumnType.text(),
-        formatter: (dynamic value) {
-          return formatForJiraTime(value);
-        }),
+      title: 'Working time',
+      field: 'working_time',
+      type: PlutoColumnType.text(),
+      // formatter: (dynamic value) {
+      //   return formatForJiraTime(value);
+      // }
+    ),
     PlutoColumn(
         title: 'Status',
         field: 'status',
@@ -67,20 +68,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
 
     var jira = ref.watch(jiraProvider);
     jira.addListener(() {
-      stateManager.resetCurrentState();
-      stateManager.removeAllRows();
-      stateManager.appendRows(jira.items.map((item) {
-        return PlutoRow(
-          key: Key(item.id!.toString()),
-          cells: {
-            'jiraId': PlutoCell(value: item.jiraId),
-            'name': PlutoCell(value: item.jiraId),
-            'started_at': PlutoCell(value: item.startTime),
-            'working_time': PlutoCell(value: item.timeLogged),
-            'status': PlutoCell(value: item.status),
-          },
-        );
-      }).toList());
+      refreshTable(jira);
     });
 
     return Column(
@@ -122,6 +110,8 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
           onLoaded: (PlutoGridOnLoadedEvent event) {
             stateManager = event.stateManager;
             stateManager.setSelectingMode(PlutoGridSelectingMode.row);
+
+            refreshTable(jira);
           },
           onChanged: (PlutoGridOnChangedEvent event) {
             var jira = ref.watch(jiraProvider);
@@ -145,19 +135,9 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
     );
   }
 
-  static String formatForJiraTime(Duration duration) {
-    if (duration.inSeconds < 60) {
-      return "${duration.inSeconds}s";
-    }
-    if (duration.inMinutes < 60) {
-      return "${duration.inMinutes}m";
-    }
-    return "${duration.inHours}h";
-  }
-
   void createManualWorklog() {
     var jiraModel = ref.watch(jiraProvider);
-    jiraModel.add(WorklogEntry("New", Duration(), WorklogStatus.pending));
+    jiraModel.add(WorklogEntry("", Duration(), WorklogStatus.pending));
   }
 
   void deleteSelected() {
@@ -201,5 +181,22 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
       }
     }
     return Duration(hours: hours, minutes: minutes, seconds: seconds);
+  }
+
+  void refreshTable(JiraProvider jira) {
+    stateManager.resetCurrentState();
+    stateManager.removeAllRows();
+    stateManager.appendRows(jira.items.map((item) {
+      return PlutoRow(
+        key: Key(item.id!.toString()),
+        cells: {
+          'jiraId': PlutoCell(value: item.jiraId),
+          'name': PlutoCell(value: item.jiraId),
+          'started_at': PlutoCell(value: item.startTime),
+          'working_time': PlutoCell(value: item.timeLoggedString),
+          'status': PlutoCell(value: item.status),
+        },
+      );
+    }).toList());
   }
 }
