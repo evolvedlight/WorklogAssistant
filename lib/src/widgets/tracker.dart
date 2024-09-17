@@ -24,10 +24,15 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
     final theme = FluentTheme.of(context);
     final trackingProviderRef = ref.watch(trackingProvider);
 
-    final issueController = useListenable(useTextEditingController());
-    final search = useState('');
+    final issueController = useListenable(useTextEditingController(text: trackingProviderRef.currentIssue));
+    final search = useState(trackingProviderRef.currentIssue);
 
     final issue = ref.watch(issueProvider(search.value));
+
+    trackingProviderRef.addListener(() {
+      search.value = trackingProviderRef.currentIssue;
+      issueController.text = trackingProviderRef.currentIssue;
+    });
 
     useDebounce(
       () => search.value = issueController.text,

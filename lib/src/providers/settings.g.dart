@@ -27,5 +27,21 @@ final currentThemeModeProvider =
 );
 
 typedef _$CurrentThemeMode = AutoDisposeNotifier<ThemeMode>;
+String _$currentJiraFilterHash() => r'f9f56369f497425430f15725f2f239c17d75b9af';
+
+/// See also [CurrentJiraFilter].
+@ProviderFor(CurrentJiraFilter)
+final currentJiraFilterProvider =
+    AutoDisposeNotifierProvider<CurrentJiraFilter, JiraFilter?>.internal(
+  CurrentJiraFilter.new,
+  name: r'currentJiraFilterProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$currentJiraFilterHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$CurrentJiraFilter = AutoDisposeNotifier<JiraFilter?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

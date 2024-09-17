@@ -6,7 +6,7 @@ part of 'jiraapi_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$issueHash() => r'ac6990904cbd5f478403a695386a1dd603ed3ef9';
+String _$issueHash() => r'f0aceac16fde177a9394b24adc773e0ab438899c';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -285,6 +285,279 @@ class _IssuesAutocompleteProviderElement
   @override
   String get searchPhrase =>
       (origin as IssuesAutocompleteProvider).searchPhrase;
+}
+
+String _$filtersAutocompleteHash() =>
+    r'cd3311ecedc6ed79aefda2081530bfaf533399ce';
+
+/// See also [filtersAutocomplete].
+@ProviderFor(filtersAutocomplete)
+final filtersAutocompleteProvider =
+    AutoDisposeFutureProvider<List<JiraFilter>>.internal(
+  filtersAutocomplete,
+  name: r'filtersAutocompleteProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$filtersAutocompleteHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef FiltersAutocompleteRef = AutoDisposeFutureProviderRef<List<JiraFilter>>;
+String _$filterHash() => r'e91845453a8e14b9e3f525787770082cb6f17baa';
+
+/// See also [filter].
+@ProviderFor(filter)
+const filterProvider = FilterFamily();
+
+/// See also [filter].
+class FilterFamily extends Family<AsyncValue<JiraFilter>> {
+  /// See also [filter].
+  const FilterFamily();
+
+  /// See also [filter].
+  FilterProvider call(
+    int filterId,
+  ) {
+    return FilterProvider(
+      filterId,
+    );
+  }
+
+  @override
+  FilterProvider getProviderOverride(
+    covariant FilterProvider provider,
+  ) {
+    return call(
+      provider.filterId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'filterProvider';
+}
+
+/// See also [filter].
+class FilterProvider extends AutoDisposeFutureProvider<JiraFilter> {
+  /// See also [filter].
+  FilterProvider(
+    int filterId,
+  ) : this._internal(
+          (ref) => filter(
+            ref as FilterRef,
+            filterId,
+          ),
+          from: filterProvider,
+          name: r'filterProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$filterHash,
+          dependencies: FilterFamily._dependencies,
+          allTransitiveDependencies: FilterFamily._allTransitiveDependencies,
+          filterId: filterId,
+        );
+
+  FilterProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.filterId,
+  }) : super.internal();
+
+  final int filterId;
+
+  @override
+  Override overrideWith(
+    FutureOr<JiraFilter> Function(FilterRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FilterProvider._internal(
+        (ref) => create(ref as FilterRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        filterId: filterId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<JiraFilter> createElement() {
+    return _FilterProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FilterProvider && other.filterId == filterId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, filterId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin FilterRef on AutoDisposeFutureProviderRef<JiraFilter> {
+  /// The parameter `filterId` of this provider.
+  int get filterId;
+}
+
+class _FilterProviderElement
+    extends AutoDisposeFutureProviderElement<JiraFilter> with FilterRef {
+  _FilterProviderElement(super.provider);
+
+  @override
+  int get filterId => (origin as FilterProvider).filterId;
+}
+
+String _$issuesForFilterHash() => r'3c67123f21831a6acd8936a7a9255a4a8ad0f9b6';
+
+/// See also [issuesForFilter].
+@ProviderFor(issuesForFilter)
+const issuesForFilterProvider = IssuesForFilterFamily();
+
+/// See also [issuesForFilter].
+class IssuesForFilterFamily extends Family<AsyncValue<List<Issue>>> {
+  /// See also [issuesForFilter].
+  const IssuesForFilterFamily();
+
+  /// See also [issuesForFilter].
+  IssuesForFilterProvider call(
+    int? filterId,
+  ) {
+    return IssuesForFilterProvider(
+      filterId,
+    );
+  }
+
+  @override
+  IssuesForFilterProvider getProviderOverride(
+    covariant IssuesForFilterProvider provider,
+  ) {
+    return call(
+      provider.filterId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'issuesForFilterProvider';
+}
+
+/// See also [issuesForFilter].
+class IssuesForFilterProvider extends AutoDisposeFutureProvider<List<Issue>> {
+  /// See also [issuesForFilter].
+  IssuesForFilterProvider(
+    int? filterId,
+  ) : this._internal(
+          (ref) => issuesForFilter(
+            ref as IssuesForFilterRef,
+            filterId,
+          ),
+          from: issuesForFilterProvider,
+          name: r'issuesForFilterProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$issuesForFilterHash,
+          dependencies: IssuesForFilterFamily._dependencies,
+          allTransitiveDependencies:
+              IssuesForFilterFamily._allTransitiveDependencies,
+          filterId: filterId,
+        );
+
+  IssuesForFilterProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.filterId,
+  }) : super.internal();
+
+  final int? filterId;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<Issue>> Function(IssuesForFilterRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: IssuesForFilterProvider._internal(
+        (ref) => create(ref as IssuesForFilterRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        filterId: filterId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<Issue>> createElement() {
+    return _IssuesForFilterProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is IssuesForFilterProvider && other.filterId == filterId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, filterId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin IssuesForFilterRef on AutoDisposeFutureProviderRef<List<Issue>> {
+  /// The parameter `filterId` of this provider.
+  int? get filterId;
+}
+
+class _IssuesForFilterProviderElement
+    extends AutoDisposeFutureProviderElement<List<Issue>>
+    with IssuesForFilterRef {
+  _IssuesForFilterProviderElement(super.provider);
+
+  @override
+  int? get filterId => (origin as IssuesForFilterProvider).filterId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

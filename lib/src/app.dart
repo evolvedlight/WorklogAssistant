@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart' as riverpod_hooks;
 import 'package:url_launcher/link.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:worklog_assistant/src/providers/search_text_provider.dart';
+import 'package:worklog_assistant/src/screens/filters.dart';
 import 'package:worklog_assistant/src/screens/issue_list.dart';
 import 'package:worklog_assistant/src/widgets/search.dart';
 import 'screens/home.dart';
@@ -89,8 +90,14 @@ class MyHomePageState extends riverpod.ConsumerState<MyHomePage> with WindowList
     ),
     PaneItem(
       key: const ValueKey('/issue-list'),
-      icon: const Icon(FluentIcons.home),
-      title: const Text('Issues'),
+      icon: const Icon(FluentIcons.search),
+      title: const Text('Issue Search'),
+      body: const SizedBox.shrink(),
+    ),
+    PaneItem(
+      key: const ValueKey('/filters'),
+      icon: const Icon(FluentIcons.filter),
+      title: const Text('My Filters'),
       body: const SizedBox.shrink(),
     ),
   ].map<NavigationPaneItem>((e) {
@@ -399,6 +406,7 @@ final router = GoRouter(navigatorKey: rootNavigatorKey, routes: [
       GoRoute(path: '/', builder: (context, state) => const HomePage()),
       GoRoute(path: '/settings', builder: (context, state) => SettingsView()),
       GoRoute(path: '/issue-list', builder: (context, state) => IssueListScreen()),
+      GoRoute(path: '/filters', builder: (context, state) => FilterScreen()),
       // GoRoute(
       //     path: '/tracking', builder: (context, state) => const TrackingPage()),
     ],
