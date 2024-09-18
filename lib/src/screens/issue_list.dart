@@ -4,7 +4,6 @@ import 'package:worklog_assistant/src/models/jiraapi/issue.dart';
 import 'package:worklog_assistant/src/providers/jira_provider.dart';
 import 'package:worklog_assistant/src/providers/jiraapi_provider.dart';
 import 'package:worklog_assistant/src/providers/search_text_provider.dart';
-import 'package:worklog_assistant/src/providers/settings_provider.dart';
 import 'package:worklog_assistant/src/providers/tracking_provider.dart';
 
 import '../models/enums/worklogstatus.dart';
@@ -41,7 +40,8 @@ class IssueListScreen extends ConsumerWidget {
                     tracking.stopTime();
                     var currentTime = tracking.secondsTimed;
                     var currentIssue = tracking.currentIssue;
-                    jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), WorklogStatus.pending));
+                    jira.add(WorklogEntry(
+                        currentIssue, Duration(seconds: currentTime), DateTime.now().subtract(Duration(seconds: currentTime)), WorklogStatus.pending));
 
                     tracking.resetTime();
                     tracking.currentIssue = issues.value![index].key;

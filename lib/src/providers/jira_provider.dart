@@ -24,7 +24,7 @@ class JiraProvider extends ChangeNotifier {
   Future fetchAndSetJiras() async {
     var data = await DatabaseHelper.getJiras();
 
-    _items.addAll(data.map((e) => WorklogEntry(e.jiraId, e.timeSpent, e.worklogStatus)..id = e.id));
+    _items.addAll(data.map((e) => WorklogEntry(e.jiraId, e.timeSpent, e.startTime, e.worklogStatus)..id = e.id));
     notifyListeners();
   }
 

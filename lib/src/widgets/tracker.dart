@@ -148,7 +148,8 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
 
     final jira = ref.read(jiraProvider);
     var currentIssue = tracking.currentIssue;
-    jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), WorklogStatus.pending));
+
+    jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), DateTime.now().subtract(Duration(seconds: currentTime)), WorklogStatus.pending));
 
     tracking.resetTime();
   }

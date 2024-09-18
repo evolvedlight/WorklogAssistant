@@ -71,7 +71,7 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
       var jiraPat = ref.watch(jiraPatProvider);
       var url = '$jiraUrl/rest/api/2/issue/$jiraId/worklog?adjustEstimate=leave';
 
-      var body = jsonEncode({"started": formatForJiraTime(startTime), "timeSpentSeconds": max(timeLogged.inSeconds, 60)});
+      var body = jsonEncode({"started": formatForJiraTime(startTime.toUtc()), "timeSpentSeconds": max(timeLogged.inSeconds, 60)});
 
       print(body);
       return http.post(Uri.parse(url),
@@ -111,7 +111,7 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
 
   String formatForJiraTime(DateTime startTime) {
     DateFormat formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-    String formattedStartTime = formatter.format(startTime.toUtc());
+    String formattedStartTime = formatter.format(startTime);
     String timezoneOffset = startTime.timeZoneOffset.isNegative ? '-' : '+';
     timezoneOffset += startTime.timeZoneOffset.inHours.abs().toString().padLeft(2, '0');
     timezoneOffset += (startTime.timeZoneOffset.inMinutes.abs() % 60).toString().padLeft(2, '0');

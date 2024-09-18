@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:worklog_assistant/src/models/jiraapi/issue.dart';
 import 'package:worklog_assistant/src/providers/jira_provider.dart';
 import 'package:worklog_assistant/src/providers/jiraapi_provider.dart';
-import 'package:worklog_assistant/src/providers/search_text_provider.dart';
 import 'package:worklog_assistant/src/providers/settings.dart';
-import 'package:worklog_assistant/src/providers/settings_provider.dart';
 import 'package:worklog_assistant/src/providers/tracking_provider.dart';
 
 import '../models/enums/worklogstatus.dart';
@@ -41,7 +39,7 @@ class FilterScreen extends ConsumerWidget {
               itemCount: issues.valueOrNull?.length ?? 0,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text("${issues.value![index].key}: ${issues.value![index].summary ?? 'No summary'}"),
+                  title: Text("${issues.value![index].key}: ${issues.value![index].summary}"),
                   cursor: SystemMouseCursors.click,
                   onPressed: () {
                     var tracking = ref.watch(trackingProvider);
@@ -50,7 +48,7 @@ class FilterScreen extends ConsumerWidget {
                     tracking.stopTime();
                     var currentTime = tracking.secondsTimed;
                     var currentIssue = tracking.currentIssue;
-                    jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), WorklogStatus.pending));
+                    jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), DateTime.now(), WorklogStatus.pending));
 
                     tracking.resetTime();
                     tracking.currentIssue = issues.value![index].key;

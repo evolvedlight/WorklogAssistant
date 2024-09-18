@@ -137,7 +137,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
 
   void createManualWorklog() {
     var jiraModel = ref.watch(jiraProvider);
-    jiraModel.add(WorklogEntry("", Duration(), WorklogStatus.pending));
+    jiraModel.add(WorklogEntry("", Duration(), DateTime.now(), WorklogStatus.pending));
   }
 
   void deleteSelected() {
