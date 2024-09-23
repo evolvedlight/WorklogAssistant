@@ -1,107 +1,111 @@
-import 'dart:collection';
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:worklog_assistant/src/services/database_helper.dart';
 
 import '../database/jira_db_model.dart';
 import '../models/enums/worklogstatus.dart';
 import '../models/worklogentry.dart';
 
-class JiraProvider extends ChangeNotifier {
-  late Future isInitCompleted;
+part 'jira_provider.g.dart';
 
-  /// Internal, private state of the cart.
-  final List<WorklogEntry> _items = [];
-
-  /// An unmodifiable view of the items in the cart.
-  UnmodifiableListView<WorklogEntry> get items => UnmodifiableListView(_items);
-
-  JiraProvider() {
-    isInitCompleted = fetchAndSetJiras();
+@riverpod
+class JiraNotifier extends _$JiraNotifier {
+  @override
+  Future<List<WorklogEntry>> build() async {
+    return await fetchAndSetWorklogEntries();
   }
 
-  Future fetchAndSetJiras() async {
+  Future<List<WorklogEntry>> fetchAndSetWorklogEntries() async {
+    print("getting from the database");
     var data = await DatabaseHelper.getJiras();
-
-    _items.addAll(data.map((e) => WorklogEntry(e.jiraId, e.timeSpent, e.startTime, e.worklogStatus)..id = e.id));
-    notifyListeners();
+    var items = data.map((e) => WorklogEntry(e.jiraId, e.timeSpent, e.startTime, e.worklogStatus)..id = e.id).toList();
+    print("got from the database");
+    return items;
   }
 
-  /// The sum of all worklogs's time logged
-  double get totalLoggedTime => _items.fold(0.0, (total, current) => total + current.timeLogged.inSeconds);
-
-  double get totalUnsubmittedTime =>
-      _items.where((item) => item.status != WorklogStatus.submitted).fold(0.0, (total, current) => total + current.timeLogged.inSeconds);
-
-  /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
-  /// cart from the outside.
-  void add(WorklogEntry item) async {
-    var id =
-        await DatabaseHelper.insertJira(JiraDbModel(jiraId: item.jiraId, timeSpent: item.timeLogged, startTime: DateTime.now(), worklogStatus: item.status));
-    item.id = id;
-    _items.add(item);
-
-    print("added item");
-
-    // This call tells the widgets that are listening to this model to rebuild.
-    notifyListeners();
+  double get totalLoggedTime {
+    return state.maybeWhen(
+      data: (items) => items.fold(0.0, (total, current) => total + current.timeLogged.inSeconds),
+      orElse: () => 0.0,
+    );
   }
 
-  void deletedSelected() {
-    var selected = _items.where((element) => element.selected).toList();
-    for (var element in selected) {
-      _items.remove(element);
-      if (element.id != null) {
-        DatabaseHelper.deleteJira(element.id!);
+  double get totalUnsubmittedTime {
+    return state.maybeWhen(
+      data: (items) => items.where((item) => item.status != WorklogStatus.submitted).fold(0.0, (total, current) => total + current.timeLogged.inSeconds),
+      orElse: () => 0.0,
+    );
+  }
+
+  Future<void> add(WorklogEntry item) async {
+    print("adding item");
+    var id = await DatabaseHelper.insertJira(JiraDbModel(
+      jiraId: item.jiraId,
+      timeSpent: item.timeLogged,
+      startTime: DateTime.now(),
+      worklogStatus: item.status,
+    ));
+    await fetchAndSetWorklogEntries(); // Refresh the state after adding
+    ref.invalidateSelf(); // Invalidate to trigger a rebuild
+  }
+
+  Future<void> updateJira(int id, WorklogEntry item) async {
+    print("updating item");
+    state = state.whenData((items) {
+      var updatedItems = List<WorklogEntry>.from(items);
+      var entryIndex = updatedItems.indexWhere((element) => element.id == id);
+      if (entryIndex != -1) {
+        updatedItems[entryIndex] = item;
       }
-    }
-    notifyListeners();
+      return updatedItems;
+    });
+
+    await DatabaseHelper.updateJira(JiraDbModel(
+      id: item.id!,
+      jiraId: item.jiraId,
+      timeSpent: item.timeLogged,
+      startTime: item.startTime,
+      worklogStatus: item.status,
+    ));
+    ref.invalidateSelf();
+  }
+
+  Future<void> delete(int id) async {
+    state = state.whenData((items) {
+      var updatedItems = items.where((item) => item.id != id).toList();
+      return updatedItems;
+    });
+
+    await DatabaseHelper.deleteJira(id);
+    ref.invalidateSelf();
   }
 
   WorklogEntry? get(int id) {
-    return _items.firstWhere((element) => element.id == id);
+    return state.maybeWhen(
+      data: (items) => items.firstWhere((element) => element.id == id),
+      orElse: () => null,
+    );
   }
 
-  void update(int id, WorklogEntry item) {
-    print("updating item");
-    var entry = _items.firstWhere((element) => element.id == id);
-    entry.jiraId = item.jiraId;
-    entry.startTime = item.startTime;
-    entry.timeLogged = item.timeLogged;
-    DatabaseHelper.updateJira(
-        JiraDbModel(id: item.id!, jiraId: item.jiraId, timeSpent: item.timeLogged, startTime: item.startTime, worklogStatus: item.status));
-    Future(() => {notifyListeners()});
-  }
-
-  void delete(int id) {
-    var victim = _items.where((element) => element.id == id).toList();
-    for (var element in victim) {
-      _items.remove(element);
-      if (element.id != null) {
-        DatabaseHelper.deleteJira(element.id!);
+  Future<void> markAs(int id, WorklogStatus status) async {
+    state = state.whenData((items) {
+      var updatedItems = List<WorklogEntry>.from(items);
+      var itemIndex = updatedItems.indexWhere((item) => item.id == id);
+      if (itemIndex != -1) {
+        updatedItems[itemIndex] = updatedItems[itemIndex].copyWith(status: status);
       }
+      return updatedItems;
+    });
+
+    var item = state.value?.firstWhere((item) => item.id == id);
+    if (item != null) {
+      await DatabaseHelper.updateJira(JiraDbModel(
+        id: item.id!,
+        jiraId: item.jiraId,
+        timeSpent: item.timeLogged,
+        startTime: item.startTime,
+        worklogStatus: item.status,
+      ));
     }
-    notifyListeners();
-  }
-
-  /// Removes all items from the cart.
-  void removeAll() {
-    _items.clear();
-    DatabaseHelper.deleteAllJiras();
-    // This call tells the widgets that are listening to this model to rebuild.
-    notifyListeners();
-  }
-
-  void markAs(int id, WorklogStatus status) {
-    var item = _items.firstWhere((element) => element.id == id);
-    item.status = status;
-    DatabaseHelper.updateJira(JiraDbModel(id: item.id, jiraId: item.jiraId, timeSpent: item.timeLogged, startTime: DateTime.now(), worklogStatus: status));
-
-    notifyListeners();
+    ref.invalidateSelf();
   }
 }
-
-final jiraProvider = ChangeNotifierProvider<JiraProvider>((ref) {
-  return JiraProvider();
-});

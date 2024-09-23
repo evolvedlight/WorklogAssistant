@@ -53,14 +53,8 @@ Future<List<IssuePicker>> issuesAutocomplete(IssuesAutocompleteRef ref, String s
 
   // Using dart:convert, we then decode the JSON payload into a Map data structure.
   final json = jsonDecode(response.body) as Map<String, dynamic>;
-  print(json);
   var result = IssuePickerResult.fromJson(json);
-  print(result.sections.length);
   var issues = result.sections.expand((section) => section.issues).toList();
-
-  for (var issue in issues) {
-    print(issue.key);
-  }
 
   return issues;
 }

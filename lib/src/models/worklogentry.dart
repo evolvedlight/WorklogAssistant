@@ -53,4 +53,22 @@ class WorklogEntry {
     }
     return result;
   }
+
+  WorklogEntry copyWith({
+    int? id,
+    String? jiraId,
+    Duration? timeLogged,
+    DateTime? startTime,
+    WorklogStatus? status,
+    bool? selected,
+  }) {
+    return WorklogEntry(
+      jiraId ?? this.jiraId,
+      timeLogged ?? this.timeLogged,
+      startTime ?? this.startTime,
+      status ?? this.status,
+    )
+      ..id = id ?? this.id
+      ..selected = selected ?? this.selected;
+  }
 }

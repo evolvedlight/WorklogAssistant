@@ -22,16 +22,16 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
   @override
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
     final theme = FluentTheme.of(context);
-    final trackingProviderRef = ref.watch(trackingProvider);
+    final trackingProviderRef = ref.watch(trackingNotifierProvider);
 
     final issueController = useListenable(useTextEditingController(text: trackingProviderRef.currentIssue));
     final search = useState(trackingProviderRef.currentIssue);
 
     final issue = ref.watch(issueProvider(search.value));
 
-    trackingProviderRef.addListener(() {
-      search.value = trackingProviderRef.currentIssue;
-      issueController.text = trackingProviderRef.currentIssue;
+    ref.listen<TrackingStateData>(trackingNotifierProvider, (previous, current) {
+      search.value = current.currentIssue;
+      issueController.text = current.currentIssue;
     });
 
     useDebounce(
@@ -142,23 +142,25 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
   }
 
   void stopTracking(riverpod.WidgetRef ref) {
-    final tracking = ref.watch(trackingProvider);
-    tracking.stopTime();
+    final trackingNotifier = ref.watch(trackingNotifierProvider.notifier);
+    final tracking = ref.watch(trackingNotifierProvider);
+    trackingNotifier.stopTime();
     var currentTime = tracking.secondsTimed;
 
-    final jira = ref.read(jiraProvider);
+    final jira = ref.read(jiraNotifierProvider.notifier);
     var currentIssue = tracking.currentIssue;
 
     jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), DateTime.now().subtract(Duration(seconds: currentTime)), WorklogStatus.pending));
 
-    tracking.resetTime();
+    trackingNotifier.resetTime();
   }
 
   void startTracking(riverpod.WidgetRef ref, String text) {
-    final tracking = ref.watch(trackingProvider);
-    tracking.currentIssue = text;
+    final tracking = ref.watch(trackingNotifierProvider.notifier);
+    final trackingState = ref.watch(trackingNotifierProvider);
+    tracking.startWithIssue(text);
 
-    print("Starting work on ${tracking.currentIssue} from button");
+    print("Starting work on ${trackingState.currentIssue} from button");
 
     tracking.startTime();
   }
@@ -166,8 +168,8 @@ class Tracker extends riverpod_hooks.HookConsumerWidget {
   onTrackerSubmitted(String value, riverpod.WidgetRef ref) {
     print("Starting work on $value");
     // at this point we want to take it and just start logging
-    final tracking = ref.watch(trackingProvider);
-    tracking.currentIssue = value;
+    final tracking = ref.watch(trackingNotifierProvider.notifier);
+    tracking.startWithIssue(value);
 
     tracking.startTime();
   }

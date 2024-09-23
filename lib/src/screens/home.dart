@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:intl/intl.dart';
+import 'package:worklog_assistant/src/models/worklogentry.dart';
 import 'package:worklog_assistant/src/providers/jira_provider.dart';
 import 'package:worklog_assistant/src/widgets/page.dart';
 import 'package:http/http.dart' as http;
@@ -31,14 +32,15 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
 
-    final jiraProviderRef = ref.watch(jiraProvider);
+    final jiraProviderRef = ref.watch(jiraNotifierProvider.notifier);
+    final jiraRef = ref.watch(jiraNotifierProvider);
 
     return ScaffoldPage(
         header: PageHeader(
           title: const Text('Worklog Assistant'),
           commandBar: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             FilledButton(
-              onPressed: isSubmitting ? null : () => uploadWorklogs(ref, jiraProviderRef),
+              onPressed: isSubmitting ? null : () => uploadWorklogs(ref),
               child: Row(
                 children: [
                   if (isSubmitting)
@@ -65,7 +67,9 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
         );
   }
 
-  uploadWorklogs(riverpod.WidgetRef ref, JiraProvider jiraModel) async {
+  uploadWorklogs(riverpod.WidgetRef ref) async {
+    var worklogEntries = ref.read(jiraNotifierProvider);
+    var worklogNotifier = ref.read(jiraNotifierProvider.notifier);
     Future<http.Response> submitWorklogs(String jiraId, Duration timeLogged, DateTime startTime) {
       var jiraUrl = ref.watch(jiraUrlProvider);
       var jiraPat = ref.watch(jiraPatProvider);
@@ -86,19 +90,19 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
     setState(() {});
 
     try {
-      for (var worklog in jiraModel.items.where((worklog) => worklog.status != WorklogStatus.submitted)) {
+      for (var worklog in worklogEntries.value!.where((worklog) => worklog.status != WorklogStatus.submitted)) {
         if (worklog.id == null) {
           continue;
         }
-        jiraModel.markAs(worklog.id!, WorklogStatus.submitting);
+        worklogNotifier.markAs(worklog.id!, WorklogStatus.submitting);
         var result = await submitWorklogs(worklog.jiraId, worklog.timeLogged, worklog.startTime);
 
         if (result.statusCode != 201) {
-          jiraModel.markAs(worklog.id!, WorklogStatus.error);
+          worklogNotifier.markAs(worklog.id!, WorklogStatus.error);
           print('Error submitting worklog: ${result.body}');
           continue;
         } else {
-          jiraModel.markAs(worklog.id!, WorklogStatus.submitted);
+          worklogNotifier.markAs(worklog.id!, WorklogStatus.submitted);
           print('Submitted Worklog');
         }
       }

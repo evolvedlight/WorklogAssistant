@@ -66,9 +66,10 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
         style: PlutoGridStyleConfig.dark(
             borderColor: Color.fromARGB(0, 0, 0, 0), gridBackgroundColor: Color.fromARGB(0, 0, 0, 0), gridBorderColor: Color.fromARGB(0, 0, 0, 0)));
 
-    var jira = ref.watch(jiraProvider);
-    jira.addListener(() {
-      refreshTable(jira);
+    var jiraState = ref.watch(jiraNotifierProvider);
+
+    ref.listen(jiraNotifierProvider, (previous, current) {
+      refreshTable(current.valueOrNull ?? []);
     });
 
     return Column(
@@ -108,13 +109,14 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
           columns: columns,
           rows: [],
           onLoaded: (PlutoGridOnLoadedEvent event) {
+            print("Loaded");
             stateManager = event.stateManager;
             stateManager.setSelectingMode(PlutoGridSelectingMode.row);
 
-            refreshTable(jira);
+            refreshTable(jiraState.valueOrNull ?? []);
           },
           onChanged: (PlutoGridOnChangedEvent event) {
-            var jira = ref.watch(jiraProvider);
+            var jira = ref.watch(jiraNotifierProvider.notifier);
             var jiraModel = jira.get(int.parse((event.row.key as ValueKey<String>).value));
             if (jiraModel == null) {
               return;
@@ -127,7 +129,9 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
               case 'working_time':
                 jiraModel.timeLogged = tryParseJiraWorklogUpdate(event.value);
             }
-            jira.update(jiraModel.id!, jiraModel);
+            var jiraN = ref.read(jiraNotifierProvider.notifier);
+
+            jiraN.updateJira(jiraModel.id!, jiraModel);
           },
           configuration: theme,
         )),
@@ -136,13 +140,13 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
   }
 
   void createManualWorklog() {
-    var jiraModel = ref.watch(jiraProvider);
+    var jiraModel = ref.watch(jiraNotifierProvider.notifier);
     jiraModel.add(WorklogEntry("", Duration(), DateTime.now(), WorklogStatus.pending));
   }
 
   void deleteSelected() {
     var selected = stateManager.checkedRows;
-    var jira = ref.watch(jiraProvider);
+    var jira = ref.watch(jiraNotifierProvider.notifier);
     for (var element in selected) {
       jira.delete(int.parse((element.key as ValueKey<String>).value));
     }
@@ -183,10 +187,11 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
     return Duration(hours: hours, minutes: minutes, seconds: seconds);
   }
 
-  void refreshTable(JiraProvider jira) {
+  void refreshTable(List<WorklogEntry> worklogEntries) {
+    print("Refreshing table. JIRA has ${worklogEntries.length} items");
     stateManager.resetCurrentState();
     stateManager.removeAllRows();
-    stateManager.appendRows(jira.items.map((item) {
+    stateManager.appendRows(worklogEntries.map((item) {
       return PlutoRow(
         key: Key(item.id!.toString()),
         cells: {

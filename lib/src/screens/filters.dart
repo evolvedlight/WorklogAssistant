@@ -42,58 +42,27 @@ class FilterScreen extends ConsumerWidget {
                   title: Text("${issues.value![index].key}: ${issues.value![index].summary}"),
                   cursor: SystemMouseCursors.click,
                   onPressed: () {
-                    var tracking = ref.watch(trackingProvider);
-                    var jira = ref.watch(jiraProvider);
+                    var trackingNotifier = ref.read(trackingNotifierProvider.notifier);
+                    var tracking = ref.read(trackingNotifierProvider);
+                    var jiraNotifier = ref.read(jiraNotifierProvider.notifier);
 
-                    tracking.stopTime();
+                    trackingNotifier.stopTime();
                     var currentTime = tracking.secondsTimed;
                     var currentIssue = tracking.currentIssue;
-                    jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), DateTime.now(), WorklogStatus.pending));
+                    jiraNotifier.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), DateTime.now(), WorklogStatus.pending));
 
-                    tracking.resetTime();
-                    tracking.currentIssue = issues.value![index].key;
+                    trackingNotifier.resetTime();
+                    trackingNotifier.startWithIssue(issues.value![index].key);
 
                     print("Starting work on ${tracking.currentIssue} from button");
 
-                    tracking.startTime();
+                    trackingNotifier.startTime();
                   },
                 );
               },
             )),
             Tracker(),
           ],
-        )
-        // first the header - this will be a table layout with a first row that has a checkbox, then the id, the name and the time spent
-        );
-    // return Column(
-    //   children: [
-    //     Text('Issue List $query'),
-    //     // Expanded(
-    //     //     child: ListView.builder(
-    //     //   itemCount: issues.valueOrNull?.length ?? 0,
-    //     //   itemBuilder: (context, index) {
-    //     //     return ListTile(
-    //     //       title: Text("${issues.value![index].key}: ${issues.value![index].summaryText ?? 'No summary'}"),
-    //     //       onTap: () {
-    //     //         var tracking = ref.watch(trackingProvider);
-    //     //         var jira = ref.watch(jiraProvider);
-
-    //     //         tracking.stopTime();
-    //     //         var currentTime = tracking.secondsTimed;
-    //     //         var currentIssue = tracking.currentIssue;
-    //     //         jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), WorklogStatus.pending));
-
-    //     //         tracking.resetTime();
-    //     //         tracking.currentIssue = issues.value![index].key;
-
-    //     //         print("Starting work on ${tracking.currentIssue} from button");
-
-    //     //         tracking.startTime();
-    //     //       },
-    //     //     );
-    //     //   },
-    //     // ))
-    //   ],
-    // );
+        ));
   }
 }

@@ -155,7 +155,7 @@ class _IssueProviderElement extends AutoDisposeFutureProviderElement<Issue?>
 }
 
 String _$issuesAutocompleteHash() =>
-    r'434626903ba732ba2260cc0af90467eb3d7a9bec';
+    r'f8067df38d81cc61d97e200a3dfb7ee966b01be0';
 
 /// See also [issuesAutocomplete].
 @ProviderFor(issuesAutocomplete)
