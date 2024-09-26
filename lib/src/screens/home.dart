@@ -33,7 +33,6 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
     assert(debugCheckHasFluentTheme(context));
 
     final jiraProviderRef = ref.watch(jiraNotifierProvider.notifier);
-    final jiraRef = ref.watch(jiraNotifierProvider);
 
     return ScaffoldPage(
         header: PageHeader(
