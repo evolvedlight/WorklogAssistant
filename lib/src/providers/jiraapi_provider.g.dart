@@ -64,8 +64,7 @@ class IssueFamily extends Family<AsyncValue<Issue?>> {
   static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies => _allTransitiveDependencies;
 
   @override
   String? get name => r'issueProvider';
@@ -83,10 +82,7 @@ class IssueProvider extends AutoDisposeFutureProvider<Issue?> {
           ),
           from: issueProvider,
           name: r'issueProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$issueHash,
+          debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product') ? null : _$issueHash,
           dependencies: IssueFamily._dependencies,
           allTransitiveDependencies: IssueFamily._allTransitiveDependencies,
           jiraId: jiraId,
@@ -146,16 +142,14 @@ mixin IssueRef on AutoDisposeFutureProviderRef<Issue?> {
   String get jiraId;
 }
 
-class _IssueProviderElement extends AutoDisposeFutureProviderElement<Issue?>
-    with IssueRef {
+class _IssueProviderElement extends AutoDisposeFutureProviderElement<Issue?> with IssueRef {
   _IssueProviderElement(super.provider);
 
   @override
   String get jiraId => (origin as IssueProvider).jiraId;
 }
 
-String _$issuesAutocompleteHash() =>
-    r'f8067df38d81cc61d97e200a3dfb7ee966b01be0';
+String _$issuesAutocompleteHash() => r'e043aa00a0d05bf27451a440cca22db65ea68f05';
 
 /// See also [issuesAutocomplete].
 @ProviderFor(issuesAutocomplete)
@@ -192,16 +186,14 @@ class IssuesAutocompleteFamily extends Family<AsyncValue<List<IssuePicker>>> {
   static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies => _allTransitiveDependencies;
 
   @override
   String? get name => r'issuesAutocompleteProvider';
 }
 
 /// See also [issuesAutocomplete].
-class IssuesAutocompleteProvider
-    extends AutoDisposeFutureProvider<List<IssuePicker>> {
+class IssuesAutocompleteProvider extends AutoDisposeFutureProvider<List<IssuePicker>> {
   /// See also [issuesAutocomplete].
   IssuesAutocompleteProvider(
     String searchPhrase,
@@ -212,13 +204,9 @@ class IssuesAutocompleteProvider
           ),
           from: issuesAutocompleteProvider,
           name: r'issuesAutocompleteProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$issuesAutocompleteHash,
+          debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product') ? null : _$issuesAutocompleteHash,
           dependencies: IssuesAutocompleteFamily._dependencies,
-          allTransitiveDependencies:
-              IssuesAutocompleteFamily._allTransitiveDependencies,
+          allTransitiveDependencies: IssuesAutocompleteFamily._allTransitiveDependencies,
           searchPhrase: searchPhrase,
         );
 
@@ -259,8 +247,7 @@ class IssuesAutocompleteProvider
 
   @override
   bool operator ==(Object other) {
-    return other is IssuesAutocompleteProvider &&
-        other.searchPhrase == searchPhrase;
+    return other is IssuesAutocompleteProvider && other.searchPhrase == searchPhrase;
   }
 
   @override
@@ -277,41 +264,34 @@ mixin IssuesAutocompleteRef on AutoDisposeFutureProviderRef<List<IssuePicker>> {
   String get searchPhrase;
 }
 
-class _IssuesAutocompleteProviderElement
-    extends AutoDisposeFutureProviderElement<List<IssuePicker>>
-    with IssuesAutocompleteRef {
+class _IssuesAutocompleteProviderElement extends AutoDisposeFutureProviderElement<List<IssuePicker>> with IssuesAutocompleteRef {
   _IssuesAutocompleteProviderElement(super.provider);
 
   @override
-  String get searchPhrase =>
-      (origin as IssuesAutocompleteProvider).searchPhrase;
+  String get searchPhrase => (origin as IssuesAutocompleteProvider).searchPhrase;
 }
 
-String _$filtersAutocompleteHash() =>
-    r'cd3311ecedc6ed79aefda2081530bfaf533399ce';
+String _$filtersAutocompleteHash() => r'47837f90ee661d069f145b474f320df2c1acfd9e';
 
 /// See also [filtersAutocomplete].
 @ProviderFor(filtersAutocomplete)
-final filtersAutocompleteProvider =
-    AutoDisposeFutureProvider<List<JiraFilter>>.internal(
+final filtersAutocompleteProvider = AutoDisposeFutureProvider<List<JiraFilter>>.internal(
   filtersAutocomplete,
   name: r'filtersAutocompleteProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$filtersAutocompleteHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product') ? null : _$filtersAutocompleteHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 typedef FiltersAutocompleteRef = AutoDisposeFutureProviderRef<List<JiraFilter>>;
-String _$filterHash() => r'e91845453a8e14b9e3f525787770082cb6f17baa';
+String _$filterHash() => r'a15c16f9715967f95d938b7da9eab5c101d027e9';
 
 /// See also [filter].
 @ProviderFor(filter)
 const filterProvider = FilterFamily();
 
 /// See also [filter].
-class FilterFamily extends Family<AsyncValue<JiraFilter>> {
+class FilterFamily extends Family<AsyncValue<JiraFilter?>> {
   /// See also [filter].
   const FilterFamily();
 
@@ -341,15 +321,14 @@ class FilterFamily extends Family<AsyncValue<JiraFilter>> {
   static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies => _allTransitiveDependencies;
 
   @override
   String? get name => r'filterProvider';
 }
 
 /// See also [filter].
-class FilterProvider extends AutoDisposeFutureProvider<JiraFilter> {
+class FilterProvider extends AutoDisposeFutureProvider<JiraFilter?> {
   /// See also [filter].
   FilterProvider(
     int filterId,
@@ -360,10 +339,7 @@ class FilterProvider extends AutoDisposeFutureProvider<JiraFilter> {
           ),
           from: filterProvider,
           name: r'filterProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$filterHash,
+          debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product') ? null : _$filterHash,
           dependencies: FilterFamily._dependencies,
           allTransitiveDependencies: FilterFamily._allTransitiveDependencies,
           filterId: filterId,
@@ -383,7 +359,7 @@ class FilterProvider extends AutoDisposeFutureProvider<JiraFilter> {
 
   @override
   Override overrideWith(
-    FutureOr<JiraFilter> Function(FilterRef provider) create,
+    FutureOr<JiraFilter?> Function(FilterRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -400,7 +376,7 @@ class FilterProvider extends AutoDisposeFutureProvider<JiraFilter> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<JiraFilter> createElement() {
+  AutoDisposeFutureProviderElement<JiraFilter?> createElement() {
     return _FilterProviderElement(this);
   }
 
@@ -418,20 +394,19 @@ class FilterProvider extends AutoDisposeFutureProvider<JiraFilter> {
   }
 }
 
-mixin FilterRef on AutoDisposeFutureProviderRef<JiraFilter> {
+mixin FilterRef on AutoDisposeFutureProviderRef<JiraFilter?> {
   /// The parameter `filterId` of this provider.
   int get filterId;
 }
 
-class _FilterProviderElement
-    extends AutoDisposeFutureProviderElement<JiraFilter> with FilterRef {
+class _FilterProviderElement extends AutoDisposeFutureProviderElement<JiraFilter?> with FilterRef {
   _FilterProviderElement(super.provider);
 
   @override
   int get filterId => (origin as FilterProvider).filterId;
 }
 
-String _$issuesForFilterHash() => r'3c67123f21831a6acd8936a7a9255a4a8ad0f9b6';
+String _$issuesForFilterHash() => r'7b9a7a191824be187a59b9e8de5b6e009f9e6d3b';
 
 /// See also [issuesForFilter].
 @ProviderFor(issuesForFilter)
@@ -468,8 +443,7 @@ class IssuesForFilterFamily extends Family<AsyncValue<List<Issue>>> {
   static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies => _allTransitiveDependencies;
 
   @override
   String? get name => r'issuesForFilterProvider';
@@ -487,13 +461,9 @@ class IssuesForFilterProvider extends AutoDisposeFutureProvider<List<Issue>> {
           ),
           from: issuesForFilterProvider,
           name: r'issuesForFilterProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$issuesForFilterHash,
+          debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product') ? null : _$issuesForFilterHash,
           dependencies: IssuesForFilterFamily._dependencies,
-          allTransitiveDependencies:
-              IssuesForFilterFamily._allTransitiveDependencies,
+          allTransitiveDependencies: IssuesForFilterFamily._allTransitiveDependencies,
           filterId: filterId,
         );
 
@@ -551,9 +521,7 @@ mixin IssuesForFilterRef on AutoDisposeFutureProviderRef<List<Issue>> {
   int? get filterId;
 }
 
-class _IssuesForFilterProviderElement
-    extends AutoDisposeFutureProviderElement<List<Issue>>
-    with IssuesForFilterRef {
+class _IssuesForFilterProviderElement extends AutoDisposeFutureProviderElement<List<Issue>> with IssuesForFilterRef {
   _IssuesForFilterProviderElement(super.provider);
 
   @override

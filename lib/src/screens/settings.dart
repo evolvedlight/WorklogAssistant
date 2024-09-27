@@ -91,7 +91,6 @@ class SettingsView extends riverpod.ConsumerWidget {
   }
 
   Future<void> checkServer(String value, BuildContext bcontext) async {
-    // try and connect using PAT token
     Future<http.Response> checkServerInt() {
       var url = '${jiraUrlController.text}/rest/auth/1/session';
 

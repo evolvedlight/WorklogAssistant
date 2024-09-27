@@ -9,12 +9,18 @@ import 'package:system_theme/system_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
 import 'package:window_manager/window_manager.dart';
+import 'package:logging/logging.dart';
+import 'package:logging_appenders/logging_appenders.dart';
 
 import 'src/storage/prefs.dart';
 
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) => throw UnimplementedError());
 
+final _logger = Logger('main');
+
 Future<void> main() async {
+  PrintAppender.setupLogging();
+  _logger.info('Starting Worklog Assistant');
   // Setup SQLite
   WidgetsFlutterBinding.ensureInitialized();
 

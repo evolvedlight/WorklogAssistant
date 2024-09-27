@@ -16,8 +16,6 @@ class FilterScreen extends ConsumerWidget {
     var filters = ref.watch(filtersAutocompleteProvider);
     var filterSelected = ref.watch(currentJiraFilterProvider);
     AsyncValue<List<Issue>> issues = ref.watch(
-      // The provider is now a function expecting the activity type.
-      // Let's pass a constant string for now, for the sake of simplicity.
       issuesForFilterProvider(filterSelected?.id),
     );
 
@@ -30,7 +28,7 @@ class FilterScreen extends ConsumerWidget {
                       items: list.map((x) => ComboBoxItem(value: x.id, child: Text(x.name))).toList(),
                       onChanged: (value) => ref.read(currentJiraFilterProvider.notifier).set(value!),
                     ),
-                error: (err, s) => Text("oh no"),
+                error: (err, s) => Text("Failed to load filters from JIRA: $err"),
                 loading: () => Text("loading"))),
         content: Column(
           children: [

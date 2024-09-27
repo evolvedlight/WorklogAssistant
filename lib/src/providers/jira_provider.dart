@@ -15,10 +15,8 @@ class JiraNotifier extends _$JiraNotifier {
   }
 
   Future<List<WorklogEntry>> fetchAndSetWorklogEntries() async {
-    print("getting from the database");
     var data = await DatabaseHelper.getJiras();
     var items = data.map((e) => WorklogEntry(e.jiraId, e.timeSpent, e.startTime, e.worklogStatus)..id = e.id).toList();
-    print("got from the database");
     return items;
   }
 

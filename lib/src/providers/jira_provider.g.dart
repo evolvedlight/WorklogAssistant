@@ -6,7 +6,7 @@ part of 'jira_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$jiraNotifierHash() => r'bd7e055f1b569d04a469194a1fe204340da1775a';
+String _$jiraNotifierHash() => r'd5ec03fc37c4e8e1f3887c465f03d8abacb6e57b';
 
 /// See also [JiraNotifier].
 @ProviderFor(JiraNotifier)

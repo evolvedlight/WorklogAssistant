@@ -50,7 +50,7 @@ class CurrentJiraFilter extends _$CurrentJiraFilter {
     if (jiraFilterId == null) {
       return null;
     }
-    AsyncValue<JiraFilter> filter = ref.watch(
+    var filter = ref.watch(
       filterProvider(jiraFilterId),
     );
 

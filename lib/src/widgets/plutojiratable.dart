@@ -50,10 +50,8 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
         title: 'Status',
         field: 'status',
         type: PlutoColumnType.text(),
-        enableAutoEditing: true,
-        formatter: (dynamic value) {
-          return convertWorklogToNiceString(value);
-        }),
+        enableAutoEditing: false,
+        renderer: (rendererContext) => Text(convertWorklogToNiceString(rendererContext.row.cells[rendererContext.column.field]!.value)))
   ];
 
   /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
@@ -188,7 +186,6 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
   }
 
   void refreshTable(List<WorklogEntry> worklogEntries) {
-    print("Refreshing table. JIRA has ${worklogEntries.length} items");
     stateManager.resetCurrentState();
     stateManager.removeAllRows();
     stateManager.appendRows(worklogEntries.map((item) {
