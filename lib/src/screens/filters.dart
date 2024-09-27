@@ -46,11 +46,13 @@ class FilterScreen extends ConsumerWidget {
                     var tracking = ref.read(trackingNotifierProvider);
                     var jiraNotifier = ref.read(jiraNotifierProvider.notifier);
 
-                    trackingNotifier.stopTime();
-                    var currentTime = tracking.secondsTimed;
-                    var currentIssue = tracking.currentIssue;
-                    jiraNotifier.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), DateTime.now(), WorklogStatus.pending));
-
+                    if (tracking.state == TrackingState.started) {
+                      trackingNotifier.stopTime();
+                      var currentTime = tracking.secondsTimed;
+                      var currentIssue = tracking.currentIssue;
+                      jiraNotifier.add(WorklogEntry(
+                          currentIssue, Duration(seconds: currentTime), DateTime.now().subtract(Duration(seconds: currentTime)), WorklogStatus.pending));
+                    }
                     trackingNotifier.resetTime();
                     trackingNotifier.startWithIssue(issues.value![index].key);
 

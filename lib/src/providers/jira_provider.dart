@@ -41,7 +41,7 @@ class JiraNotifier extends _$JiraNotifier {
     var id = await DatabaseHelper.insertJira(JiraDbModel(
       jiraId: item.jiraId,
       timeSpent: item.timeLogged,
-      startTime: DateTime.now(),
+      startTime: item.startTime,
       worklogStatus: item.status,
     ));
     await fetchAndSetWorklogEntries(); // Refresh the state after adding
