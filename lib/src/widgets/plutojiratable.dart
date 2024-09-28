@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:worklog_assistant/src/providers/jira_provider.dart';
+import 'package:worklog_assistant/src/providers/settings.dart';
 import 'package:worklog_assistant/src/widgets/asyncjirasummarytextwidget.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 
@@ -60,9 +61,9 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = PlutoGridConfiguration.dark(
-        style: PlutoGridStyleConfig.dark(
-            borderColor: Color.fromARGB(0, 0, 0, 0), gridBackgroundColor: Color.fromARGB(0, 0, 0, 0), gridBorderColor: Color.fromARGB(0, 0, 0, 0)));
+    var appTheme = ref.watch(currentThemeModeProvider);
+
+    var gridTheme = calculateTheme(appTheme);
 
     var jiraState = ref.watch(jiraNotifierProvider);
 
@@ -131,7 +132,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
 
             jiraN.updateJira(jiraModel.id!, jiraModel);
           },
-          configuration: theme,
+          configuration: gridTheme,
         )),
       ],
     );
@@ -200,5 +201,20 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
         },
       );
     }).toList());
+  }
+
+  PlutoGridConfiguration calculateTheme(ThemeMode appTheme) {
+    if (appTheme.name == "dark") {
+      return PlutoGridConfiguration.dark(
+          style: PlutoGridStyleConfig.dark(
+              borderColor: Color.fromARGB(0, 0, 0, 0), gridBackgroundColor: Color.fromARGB(0, 0, 0, 0), gridBorderColor: Color.fromARGB(0, 0, 0, 0)));
+    }
+    return PlutoGridConfiguration(
+      style: PlutoGridStyleConfig(
+        borderColor: Color.fromARGB(0, 0, 0, 0),
+        gridBackgroundColor: Color.fromARGB(0, 0, 0, 0),
+        gridBorderColor: Color.fromARGB(0, 0, 0, 0),
+      ),
+    );
   }
 }
