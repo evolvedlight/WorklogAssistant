@@ -47,7 +47,7 @@ class IssueListScreen extends ConsumerWidget {
                       trackingNotifier.resetTime();
                     }
 
-                    trackingNotifier.startWithIssue(issues.value![index].key);
+                    trackingNotifier.changeIssue(issues.value![index].key);
 
                     print("Starting work on ${tracking.currentIssue} from button");
 

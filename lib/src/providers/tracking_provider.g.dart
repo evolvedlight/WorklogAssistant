@@ -6,7 +6,7 @@ part of 'tracking_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$trackingNotifierHash() => r'2011527b85267286be026d4c3351b970bcf2b6c5';
+String _$trackingNotifierHash() => r'e60327343d55db52e5f4ca20d346b261a1703090';
 
 /// See also [TrackingNotifier].
 @ProviderFor(TrackingNotifier)

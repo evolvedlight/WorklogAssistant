@@ -52,7 +52,7 @@ class FilterScreen extends ConsumerWidget {
                           currentIssue, Duration(seconds: currentTime), DateTime.now().subtract(Duration(seconds: currentTime)), WorklogStatus.pending));
                     }
                     trackingNotifier.resetTime();
-                    trackingNotifier.startWithIssue(issues.value![index].key);
+                    trackingNotifier.changeIssue(issues.value![index].key);
 
                     print("Starting work on ${tracking.currentIssue} from button");
 

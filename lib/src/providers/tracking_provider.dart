@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../models/enums/worklogstatus.dart';
+import '../models/worklogentry.dart';
+import 'jira_provider.dart';
+
 part 'tracking_provider.g.dart';
 
 // enum for tracking current state (stopped, started)
@@ -43,6 +47,19 @@ class TrackingNotifier extends _$TrackingNotifier {
     );
   }
 
+  void stopTrackingAndAddWorklog() {
+    final jira = ref.read(jiraNotifierProvider.notifier);
+    stopTime();
+
+    final currentIssue = state.currentIssue;
+    final currentTime = state.secondsTimed;
+    final startTime = DateTime.now().subtract(Duration(seconds: currentTime));
+
+    jira.add(WorklogEntry(currentIssue, Duration(seconds: currentTime), startTime, WorklogStatus.pending));
+
+    resetTime();
+  }
+
   void startTime() {
     state = state.copyWith(secondsTimed: 0, state: TrackingState.started);
     _callbackTimer?.cancel();
@@ -61,7 +78,14 @@ class TrackingNotifier extends _$TrackingNotifier {
     state = state.copyWith(secondsTimed: 0);
   }
 
-  void startWithIssue(String key) {
+  void changeIssue(String key) {
+    // it might already be tracking, in which case we should stop, send the update to the jira provider, and start again
+    if (state.state == TrackingState.started) {
+      stopTrackingAndAddWorklog();
+    }
+    resetTime();
     state = state.copyWith(currentIssue: key);
+
+    startTime();
   }
 }
