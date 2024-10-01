@@ -20,22 +20,7 @@ class JiraNotifier extends _$JiraNotifier {
     return items;
   }
 
-  double get totalLoggedTime {
-    return state.maybeWhen(
-      data: (items) => items.fold(0.0, (total, current) => total + current.timeLogged.inSeconds),
-      orElse: () => 0.0,
-    );
-  }
-
-  double get totalUnsubmittedTime {
-    return state.maybeWhen(
-      data: (items) => items.where((item) => item.status != WorklogStatus.submitted).fold(0.0, (total, current) => total + current.timeLogged.inSeconds),
-      orElse: () => 0.0,
-    );
-  }
-
   Future<void> add(WorklogEntry item) async {
-    print("adding item");
     var id = await DatabaseHelper.insertJira(JiraDbModel(
       jiraId: item.jiraId,
       timeSpent: item.timeLogged,

@@ -6,6 +6,7 @@ import 'package:worklog_assistant/src/providers/jira_provider.dart';
 import 'package:worklog_assistant/src/widgets/page.dart';
 
 import '../models/enums/worklogstatus.dart';
+import '../models/worklogentry.dart';
 import '../widgets/plutojiratable.dart';
 import '../widgets/tracker.dart';
 
@@ -27,7 +28,7 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
 
-    final jiraProviderRef = ref.watch(jiraNotifierProvider.notifier);
+    final jiras = ref.watch(jiraNotifierProvider);
 
     return ScaffoldPage(
         header: PageHeader(
@@ -44,7 +45,7 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
                     ),
                   if (!isSubmitting) Icon(FluentIcons.cloud_upload),
                   SizedBox(width: 8.0),
-                  Text("Submit Worklogs (${formatTotalLoggedTime(jiraProviderRef.totalUnsubmittedTime)})"),
+                  Text("Submit Worklogs (${formatTotalLoggedTime(totalUnsubmittedTime(jiras))})"),
                 ],
               ),
             ),
@@ -56,6 +57,17 @@ class HomePageState extends riverpod.ConsumerState<HomePage> with PageMixin {
             Tracker(),
           ],
         ));
+  }
+
+  double totalUnsubmittedTime(riverpod.AsyncValue<List<WorklogEntry>> state) {
+    return state.maybeWhen(
+      data: (items) {
+        return items.where((item) => item.status != WorklogStatus.submitted).fold(0.0, (total, current) => total + current.timeLogged.inSeconds);
+      },
+      orElse: () {
+        return 0.0;
+      },
+    );
   }
 
   uploadWorklogs(riverpod.WidgetRef ref) async {
