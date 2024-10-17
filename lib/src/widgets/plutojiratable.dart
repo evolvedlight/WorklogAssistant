@@ -33,12 +33,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
         renderer: (rendererContext) {
           return AsyncJiraSummaryTextWidget(rendererContext.row.cells[rendererContext.column.field]!.value.toString());
         }),
-    PlutoColumn(
-      title: 'Started At',
-      field: 'started_at',
-      type: PlutoColumnType.text(),
-      formatter: (value) => DateFormat('yyyy-MM-dd HH:mm:ss').format(value),
-    ),
+    PlutoColumn(title: 'Started At', field: 'started_at', type: PlutoColumnType.text()),
     PlutoColumn(
       title: 'Working time',
       field: 'working_time',
@@ -52,6 +47,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
         field: 'status',
         type: PlutoColumnType.text(),
         enableAutoEditing: false,
+        enableEditingMode: false,
         renderer: (rendererContext) => Text(convertWorklogToNiceString(rendererContext.row.cells[rendererContext.column.field]!.value)))
   ];
 
@@ -111,6 +107,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
             print("Loaded");
             stateManager = event.stateManager;
             stateManager.setSelectingMode(PlutoGridSelectingMode.row);
+            stateManager.setAutoEditing(true);
 
             refreshTable(jiraState.valueOrNull ?? []);
           },
@@ -124,7 +121,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
               case 'jiraId':
                 jiraModel.jiraId = event.value.toString();
               case 'started_at':
-                jiraModel.startTime = event.value as DateTime;
+                jiraModel.startTime = tryParseJiraStartTime(event.value);
               case 'working_time':
                 jiraModel.timeLogged = tryParseJiraWorklogUpdate(event.value);
             }
@@ -186,6 +183,15 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
     return Duration(hours: hours, minutes: minutes, seconds: seconds);
   }
 
+  DateTime tryParseJiraStartTime(value) {
+    var tryIt = DateFormat('yyyy-MM-dd HH:mm').tryParse(value);
+    if (tryIt != null) {
+      return tryIt;
+    } else {
+      return DateTime.now();
+    }
+  }
+
   void refreshTable(List<WorklogEntry> worklogEntries) {
     stateManager.resetCurrentState();
     stateManager.removeAllRows();
@@ -195,7 +201,7 @@ class _PlutoGridExamplePageState extends ConsumerState<PlutoJiraTable> {
         cells: {
           'jiraId': PlutoCell(value: item.jiraId),
           'name': PlutoCell(value: item.jiraId),
-          'started_at': PlutoCell(value: item.startTime),
+          'started_at': PlutoCell(value: item.startTimeString),
           'working_time': PlutoCell(value: item.timeLoggedString),
           'status': PlutoCell(value: item.status),
         },

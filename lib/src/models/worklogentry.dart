@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import 'enums/worklogstatus.dart';
 
 class WorklogEntry {
@@ -52,6 +54,28 @@ class WorklogEntry {
       }
     }
     return result;
+  }
+
+  String get startTimeString {
+    return formatStartTime(startTime);
+  }
+
+  // format as 'yyyy-MM-dd HH:mm'
+  String formatStartTime(DateTime startTime) {
+    return DateFormat('yyyy-MM-dd HH:mm').format(startTime);
+  }
+
+  set startTimeString(String value) {
+    startTime = tryParseStartTimeUpdate(value);
+  }
+
+  DateTime tryParseStartTimeUpdate(String value) {
+    var tryIt = DateFormat('yyyy-MM-dd HH:mm').tryParse(value);
+    if (tryIt != null) {
+      return tryIt;
+    } else {
+      return startTime;
+    }
   }
 
   WorklogEntry copyWith({
