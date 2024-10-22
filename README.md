@@ -13,6 +13,7 @@ Worklog Assistant is an open source replacement for the Worklog Assistant tool t
 - [Usage](#usage)
 - [Contribution Guidelines](#contribution-guidelines)
 - [External Resources](#external-resources)
+- [License](#license)
 
 ![worklog assistant image](docs/image.png)
 
@@ -85,3 +86,6 @@ The purpose of Worklog Assistant is to provide a reliable and efficient tool for
 - **Submit Worklogs**: Submit your tracked worklogs directly to JIRA with a single click.
 - **User-Friendly Interface**: View and manage your worklogs in an intuitive and easy-to-use interface.
 
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
