@@ -32,7 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  fluent_ui: ^4.4.0
+  fluent_ui: ^4.9.2
   system_theme: ^3.1.0
   flutter_acrylic: ^1.0.0+2
   window_manager: ^0.4.2
